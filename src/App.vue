@@ -1,6 +1,10 @@
 <template>
   <div id="app">
+<<<<<<< HEAD
     <router-view style="margin-top: 53px;" />
+=======
+    <router-view style="margin-top: 52px;" />
+>>>>>>> 009fa4ffa93329cad99780c32fd6521c02ed6c4f
     <Navigator/>
   </div>
 </template>
