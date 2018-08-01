@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import VueSocketio from 'vue-socket.io'
 
+
 Vue.use(VueSocketio, window.location.origin);
 Vue.config.productionTip = false
 

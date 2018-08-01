@@ -22,7 +22,7 @@
       <div id="Navigator-menu" v-if="open">
         <div class="title">设置</div>
         <set-block title="机械臂" @active="onActive(1)" :active="focus==1">
-          <set-slider v-for="servo in ServoValue" :key="servo.name" :name="servo.name" v-model="servo.value" />
+          <set-slider v-for="(servo,index) in ServoValue" :key="index" :name="servo.name" v-model="$store.state.servo[index]" />
         </set-block>
         <set-block title="传输流" @active="onActive(2)" :active="focus==2">
           <div class="single-input">
@@ -59,12 +59,12 @@ export default {
   data() {
     return {
       ServoValue: [
-        { name: "左手", value: [0, 100] },
-        { name: "左关", value: [0, 100] },
-        { name: "左臂", value: [0, 100] },
-        { name: "右手", value: [0, 100] },
-        { name: "右关", value: [0, 100] },
-        { name: "右臂", value: [0, 100] }
+        { name: "左手" },
+        { name: "左关" },
+        { name: "左臂" },
+        { name: "右手" },
+        { name: "右关" },
+        { name: "右臂" }
       ],
       value: [10, 20],
       focus: 2,
@@ -83,7 +83,10 @@ export default {
       if (this.focus == index) this.focus = 0;
       else this.focus = index;
     }
-  }
+  },
+  // mounted(){
+  //   debugger;
+  // }
 };
 </script>
 <style lang='scss'>

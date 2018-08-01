@@ -43,10 +43,10 @@ module.exports = {
 
   build: {
     // Template for index.html
-    index: path.resolve(__dirname, '../../pro2/templates/index.html'),
+    index: path.resolve(__dirname, '../../rovnode/static/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../../pro2/'),
+    assetsRoot: path.resolve(__dirname, '../../rovnode/static'),
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
 

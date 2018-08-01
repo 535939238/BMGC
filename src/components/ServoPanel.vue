@@ -15,18 +15,21 @@ export default {
     return {
       sliders: [
         { name: "左A", value: 0 },
-        { name: "左B", value: 396, min: 100, max: 700 },
-        { name: "左C", value: 0, min: 100, max: 500 },
-        { name: "右A", value: 0 },
-        { name: "右B", value: 0 },
-        { name: "右C", value: 0 }
+        { name: "左B", value: 0 },
+        { name: "左C", value: 0 }
+        // { name: "右A", value: 0 },
+        // { name: "右B", value: 0 },
+        // { name: "右C", value: 0 }
       ]
     };
   },
   methods: {
     ValueWatcher(slider, index, value) {
       slider.value = value;
-      this.$socket.emit("servo", index, value / 100);
+      let setval = this.$store.state.servo[index];
+      let emitval = (setval[1] - setval[0]) * value / 10000 + setval[0] / 100;
+      this.$socket.emit("servo", index, emitval);
+      console.log(emitval);
     }
   }
 };

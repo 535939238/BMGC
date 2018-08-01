@@ -7,11 +7,13 @@
 
 <script>
 import Navigator from "@/components/Navigator";
+import store from "@/store/index";
 export default {
   name: "App",
   components: {
     Navigator
-  }
+  },
+  store
 };
 </script>
 
