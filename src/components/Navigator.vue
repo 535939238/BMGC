@@ -24,10 +24,28 @@
         <set-block title="机械臂" @active="onActive(1)" :active="focus==1">
           <set-slider v-for="servo in ServoValue" :key="servo.name" :name="servo.name" v-model="servo.value" />
         </set-block>
-        <set-block title="视频流" @active="onActive(2)" :active="focus==2">
-          <div class="streamsetting">
-            <input class="msinput" v-model="videoStreamAddress" />
+        <set-block title="传输流" @active="onActive(2)" :active="focus==2">
+          <div class="single-input">
+            <input v-model="videoStreamAddress" class="msinput" placeholder="/5002" />
+            <span>视频流</span>
           </div>
+          <div class="single-input">
+            <input v-model="mavlinkStreamAddress" class="msinput" placeholder="/5001">
+            <span>mavlink</span>
+          </div>
+          <div class="single-input">
+            <input v-model="commandStreamAddress" class="msinput" placeholder="/">
+            <span>指令流</span>
+          </div>
+        </set-block>
+        <set-block title="窗口" @active="onActive(3)" :active="focus==3">
+
+        </set-block>
+        <set-block title="高级" @active="onActive(4)" :active="focus==4">
+
+        </set-block>
+        <set-block title="关于" @active="onActive(5)" :active="focus==5">
+
         </set-block>
       </div>
     </transition>
@@ -50,7 +68,9 @@ export default {
       ],
       value: [10, 20],
       focus: 2,
-      videoStreamAddress: "/5002",
+      videoStreamAddress: "",
+      mavlinkStreamAddress: "",
+      commandStreamAddress: "",
       open: false
     };
   },
@@ -68,6 +88,7 @@ export default {
 </script>
 <style lang='scss'>
 #Navigator {
+  $barheight: 50px;
   #Navigator-bar {
     display: flex;
     align-items: center;
@@ -75,47 +96,21 @@ export default {
     left: 0;
     top: 0;
     right: 0;
-    height: 50px;
+    height: $barheight;
     background: #1c2327ee;
-    border-bottom: 1px solid #eeeeeeee;
-    .menuico {
-      width: 50px;
-      height: 50px;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all ease-in-out 0.4s;
+    border-bottom: 1px solid #eeeeee50;
+    .logo {
+      height: $barheight * 0.6;
+      width: auto;
+      padding: $barheight * 0.2;
+      margin-right: 1rem;
+      transition: background-color 0.4s ease-in-out;
       &:hover {
         background: #00c1de;
       }
-      > .icon {
-        width: 25px;
-        height: 25px;
-      }
-    }
-    .logo {
-      height: 60%;
-      width: auto;
-      margin-left: 2rem;
-      margin-right: 1rem;
     }
     .title {
       color: white;
-    }
-  }
-  .menu-enter-to,
-  .menu-leave {
-    transform: translate(0, 0);
-    .mask {
-      opacity: 0.3;
-    }
-  }
-  .menu-leave-to,
-  .menu-enter {
-    transform: translate(-100%, 0);
-    .mask {
-      opacity: 0 !important;
     }
   }
   #Navigator-mask {
@@ -128,6 +123,14 @@ export default {
     transition: opacity 0.4s ease-in-out;
   }
   #Navigator-menu {
+    &.menu-enter-to,
+    &.menu-leave {
+      transform: translate(0, 0);
+    }
+    &.menu-leave-to,
+    &.menu-enter {
+      transform: translate(-100%, 0);
+    }
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -146,13 +149,21 @@ export default {
       margin-bottom: 1rem;
       font-size: 0.9rem;
     }
-    .streamsetting {
+    .single-input {
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin-bottom: 10px;
       > input {
         width: 80%;
         padding: 5px 10px;
+      }
+      > span {
+        color: white;
+        align-self: flex-start;
+        margin-top: 5px;
+        margin-left: 1.2rem;
+        font-size: 0.8rem;
       }
     }
   }

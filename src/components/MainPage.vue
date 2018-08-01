@@ -1,21 +1,32 @@
 <template>
   <div id='MainPage'>
     <div class="outputdiv">
-      <canvas ref="canvas" :style="canvasStyle"></canvas>
+      <canvas ref="canvas" width="1000" height="800" :style="canvasStyle"></canvas>
     </div>
-    <ControlPanel />
-    <img ref="source" src="/video_feed" style="display:none">
+    <div class="rightPanel">
+      <ControlPanel name="机械臂控制">
+        <ServoPanel />
+      </ControlPanel>
+      <ControlPanel name="履带控制">
+        <PwmPanel />
+      </ControlPanel>
+    </div>
+    <img ref="source" src="/static/defaultBg.jpg" style="display:none">
   </div>
 </template>
 
 <script>
+import ServoPanel from "./ServoPanel";
+import PwmPanel from "./PwmPanel";
 import TrackerVideo from "@/classes/TrackerVideo";
-import ControlPanel from "@/components/ControlPanel";
+import ControlPanel from "./ControlPanel";
 import mavlink from "@/assets/mavlink";
 export default {
   name: "",
   components: {
-    ControlPanel
+    ControlPanel,
+    ServoPanel,
+    PwmPanel
   },
   data() {
     return {
@@ -42,7 +53,7 @@ export default {
     window.addEventListener("resize", rsEvent);
     setTimeout(rsEvent, 200);
     new TrackerVideo({
-      FPS: 30,
+      FPS: 1,
       inputElement: this.$refs.source,
       outputElement: canvas,
       init:
@@ -110,6 +121,19 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-image: url(/static/defaultBg.jpg);
+    background-size: cover;
+    background-position: center;
+  }
+  .rightPanel {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    right: 20px;
+    width: 360px;
+    > * {
+      min-height: 240px;
+    }
   }
 }
 </style>

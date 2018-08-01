@@ -36,5 +36,8 @@ export default {
 #ServoPanel {
   display: flex;
   justify-content: space-around;
+  flex-grow: 1;
+  align-self: stretch;
+  padding: 4%;
 }
 </style>
