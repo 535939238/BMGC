@@ -1,0 +1,115 @@
+<template>
+  <div id='MainPage'>
+    <div class="outputdiv">
+      <canvas ref="canvas" :style="canvasStyle"></canvas>
+    </div>
+    <ControlPanel />
+    <img ref="source" src="/video_feed" style="display:none">
+  </div>
+</template>
+
+<script>
+import TrackerVideo from "@/classes/TrackerVideo";
+import ControlPanel from "@/components/ControlPanel";
+import mavlink from "@/assets/mavlink";
+export default {
+  name: "",
+  components: {
+    ControlPanel
+  },
+  data() {
+    return {
+      canvasStyle: {}
+    };
+  },
+  methods: {},
+  mounted() {
+    //disable select
+    document.onselectstart = function() {
+      return false;
+    };
+
+    //opencv init
+    const canvas = this.$refs.canvas;
+    const app = document.getElementById("app");
+    const rsEvent = () => {
+      var hscale = app.clientWidth / canvas.width;
+      var vscale = app.clientHeight / canvas.height;
+      this.canvasStyle = {
+        transform: `scale(${Math.max(hscale, vscale)})`
+      };
+    };
+    window.addEventListener("resize", rsEvent);
+    setTimeout(rsEvent, 200);
+    new TrackerVideo({
+      FPS: 30,
+      inputElement: this.$refs.source,
+      outputElement: canvas,
+      init:
+        window.VideoInitFunc ||
+        async function() {
+          return function(frame) {
+            cv.cvtColor(frame, frame, cv.COLOR_RGB2GRAY, 0);
+            return frame;
+          };
+        }
+    });
+
+    //ws
+    let mavlinkParser = new mavlink.MAVLink(null, 1, 50);
+    let request = new mavlink.messages.request_data_stream(
+      1,
+      1,
+      mavlink.MAV_DATA_STREAM_ALL,
+      1,
+      1
+    );
+    request.pack(mavlinkParser);
+
+    // const ws = new WebSocket(`ws://${location.host}:5001`);
+    const ws = new WebSocket("ws://192.168.0.76:5001");
+    ws.binaryType = "arraybuffer";
+    ws.onopen = function() {
+      setInterval(function() {
+        let request = new mavlink.messages.request_data_stream(
+          1,
+          1,
+          mavlink.MAV_DATA_STREAM_ALL,
+          1,
+          1
+        );
+        let p = new Buffer(request.pack(mavlinkParser));
+        ws.send(p);
+      });
+    };
+
+    ws.onmessage = function({ data }) {
+      mavlinkParser.parseBuffer(Buffer.from(data));
+    };
+
+    mavlinkParser.on("HEARTBEAT", message => {
+      console.log("Got a heartbeat message!");
+      console.log(message); // message is a HEARTBEAT message
+    });
+
+    mavlinkParser.on("message", message => {
+      console.log(message);
+    });
+  }
+};
+</script>
+
+<style lang='scss'>
+#MainPage {
+  .outputdiv {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+</style>
