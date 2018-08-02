@@ -1,27 +1,30 @@
 <template>
   <div id='PwmPanel'>
-    <JoyStickSingle @axis="onTankMove" :size="140" />
-    <div class="speed">
-      <RovSlider :slider="speedSlider" v-model="speedSlider.value" />
-    </div>
+    <JoyStickSingle @axis="onHandMove" :slider="stepSlider" :size="100" name="机械臂" />
+    <JoyStickSingle @axis="onTankMove" :slider="speedSlider" :size="100" name="履带" />
   </div>
 </template>
 
 <script>
 import JoyStickSingle from "./JoyStickSingle";
-import RovSlider from "./RovSlider";
 export default {
   name: "",
   components: {
-    RovSlider,
     JoyStickSingle
   },
   data() {
-    return {
+    return {      
+
       speedSlider: {
         name: "基准速度",
-        value: 50,
-        max: 100
+        value: 0.4
+      },
+      stepSlider:{
+        name: "基准幅度",
+        value: 0.5
+      },
+      handVal:{
+        
       }
     };
   },
@@ -34,7 +37,7 @@ export default {
         setTimeout(() => (this.sending = false), 30);
       }
 
-      let maxSpeed = this.speedSlider.value / 100;
+      let maxSpeed = this.speedSlider.value;
       let yReal = y ** 2 * maxSpeed;
       let xReal = (1 - x ** 2) * yReal;
       if (y < 0) {
@@ -44,6 +47,14 @@ export default {
 
       // console.log(xReal, yReal);
       this.$socket.emit("tank", xReal, yReal);
+
+      /*let [lspeed, rspeed] = [xReal, yReal];
+      let speedlist = lspeed < 0 ? [-lspeed, 0] : [0, lspeed];
+      speedlist.push.apply(speedlist, rspeed < 0 ? [-rspeed, 0] : [0, rspeed]);
+      console.log(speedlist);*/
+    },
+    onHandMove(x, y, angle) {
+
     }
   }
 };

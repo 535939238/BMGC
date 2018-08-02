@@ -12,7 +12,6 @@
           <path d="M995.392 799.296c0 32-23.744 57.92-53.12 57.92L312.512 857.216c-29.376 0-53.184-25.92-53.184-57.92l0 0c0-31.872 23.744-57.792 53.184-57.792l629.696 0C971.648 741.504 995.392 767.424 995.392 799.296L995.392 799.296z" p-id="1588"></path>
         </svg>
       </div> -->
-      <img class="logo" src="@/assets/logo2.png" @click="open=!open" alt="">
       <span class="title">北冥有鱼</span>
     </div>
     <transition name="fade">
@@ -49,6 +48,7 @@
         </set-block>
       </div>
     </transition>
+    <img class="logo" src="@/assets/logo2.png" @click="open=!open" alt="">
   </div>
 </template>
 
@@ -106,18 +106,9 @@ export default {
     height: $barheight;
     background: #1c2327ee;
     border-bottom: 1px solid #eeeeee50;
-    .logo {
-      height: $barheight * 0.6;
-      width: auto;
-      padding: $barheight * 0.2;
-      margin-right: 1rem;
-      transition: background-color 0.4s ease-in-out;
-      &:hover {
-        background: #00c1de;
-      }
-    }
     .title {
       color: white;
+      padding-left: 70px;
     }
   }
   #Navigator-mask {
@@ -152,6 +143,7 @@ export default {
     .title {
       background: #00000080;
       padding: 1rem;
+      padding-left: 70px;
       color: white;
       margin-bottom: 1rem;
       font-size: 0.9rem;
@@ -172,6 +164,20 @@ export default {
         margin-left: 1.2rem;
         font-size: 0.8rem;
       }
+    }
+  }
+  .logo {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: $barheight * 0.6;
+    width: auto;
+    padding: $barheight * 0.2;
+    margin-right: 1rem;
+    transition: background-color 0.4s ease-in-out;
+    z-index: 1000000;
+    &:hover {
+      background: #00c1de;
     }
   }
 }

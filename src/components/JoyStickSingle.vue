@@ -1,17 +1,21 @@
 <!-- JoyStickSingle -->
 <template>
   <div class="JoyStickSingle">
-    <div class="bg" :style="bgStyle" @touchmove="onTouchMove($event)" @mousemove="onMouseMove($event)" @touchend="onMouseUp" ref="bg">
-      <div class="bar" :style="barStyle" @mousedown="onMouseDown($event)" @touchstart="onTouchStart($event)"></div>
-      <div class="mask" @mouseleave="onMouseUp" @mouseup="onMouseUp"></div>
+    <div class="bg" :style="bgStyle" ref="bg">
+      <CircleSlider v-if="slider" v-model="slider.value" :name="slider.name" />
+      <div class="bar" :style="barStyle" @mousedown="onMouseDown" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onMouseUp"></div>
     </div>
+    <div v-once class="name">{{name}}</div>
   </div>
 </template>
 
 <script>
+import CircleSlider from "./CircleSlider";
 export default {
   props: {
-    size: Number
+    slider: null,
+    size: Number,
+    name: String
   },
   data() {
     return {
@@ -20,6 +24,9 @@ export default {
         y: 0
       }
     };
+  },
+  components: {
+    CircleSlider
   },
   computed: {
     barStyle() {
@@ -45,15 +52,15 @@ export default {
         y: clientY
       };
       this.bgSize = this.$refs.bg.clientHeight / 2;
-      this.bgSize2 = this.bgSize ** 2;
+      window.addEventListener("mousemove", this.onBaseMove);
+      window.addEventListener("mouseup", this.onMouseUp);
     },
     onMouseUp() {
       this.barOffset.x = 0;
       this.barOffset.y = 0;
       this.onBaseMove({ clientX: this.barStart.x, clientY: this.barStart.y });
-    },
-    onMouseMove(e) {
-      if (e.buttons == 1) this.onBaseMove(e);
+      window.removeEventListener("mousemove", this.onBaseMove);
+      window.removeEventListener("mouseup", this.onMouseUp);
     },
     onTouchStart({ touches: [touch] }) {
       this.onMouseDown(touch);
@@ -80,19 +87,6 @@ export default {
         this.barOffset.y = aby * this.bgSize;
       }
       this.$emit("axis", -abx, -aby, angle);
-
-      //以上为UI部分，以下为socket部分
-      /*let maxSpeed = this.speedSlider.value / 100;
-      let yReal = this.barOffset.y ** 2 / this.bgSize2 * maxSpeed;
-      let xReal = yReal * (1 - this.barOffset.x ** 2 / this.bgSize2);
-      if (this.barOffset.y > 0) {
-        yReal = -yReal;
-        xReal = -xReal;
-      }
-      this.$socket.emit("tank", xReal, yReal);*/
-    },
-    onClick() {
-      console.log("click");
     }
   }
 };
@@ -101,9 +95,11 @@ export default {
 .JoyStickSingle {
   flex-grow: 2;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   > .bg {
+    position: relative;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.8);
     display: flex;
@@ -118,6 +114,13 @@ export default {
       right: 0;
       bottom: 0;
     }
+    > .CircleSlider {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+    }
     > .bar {
       width: 50%;
       height: 50%;
@@ -130,6 +133,16 @@ export default {
         transition: none;
       }
     }
+  }
+  .name {
+    color: white;
+    padding: 3px 10px;
+    min-width: 50px;
+    border-radius: 3px;
+    background: #00000080;
+    font-size: 0.7rem;
+    text-align: center;
+    margin-top: 5px;
   }
 }
 </style>

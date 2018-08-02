@@ -7,6 +7,10 @@ class TrackerVideo {
     frames,
     nextTick
   }) {
+    if (FPS === 0) {
+      console.warn("FPS is 0, disable opencv.");
+      return;
+    }
     this.$FPS = FPS;
     this.$delay = Math.floor(1000 / FPS);
     this.$el =

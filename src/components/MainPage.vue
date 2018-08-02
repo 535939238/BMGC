@@ -56,7 +56,7 @@ export default {
 
     // setTimeout(rsEvent, 200);
     new TrackerVideo({
-      FPS: 0.0001,
+      FPS: 0,
       inputElement: this.$refs.source,
       outputElement: canvas,
       init:
@@ -111,7 +111,7 @@ export default {
 
     mavlinkParser.on("message", message => {
       console.log(message);
-    });
+    });    
   }
 };
 </script>
@@ -127,7 +127,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: url(/static/defaultBg.jpg);
+    background-image: url(/static/HXbackground.png);
     background-size: cover;
     background-position: center;
   }
