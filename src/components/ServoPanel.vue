@@ -26,10 +26,15 @@ export default {
   methods: {
     ValueWatcher(slider, index, value) {
       slider.value = value;
+
+      if (this.sending) return;
+      this.sending = true;
+      setTimeout(() => (this.sending = false), 30);
+
       let setval = this.$store.state.servo[index];
       let emitval = (setval[1] - setval[0]) * value / 10000 + setval[0] / 100;
       this.$socket.emit("servo", index, emitval);
-      console.log(emitval);
+      // console.log(index, value);
     }
   }
 };
