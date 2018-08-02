@@ -27,12 +27,23 @@ export default {
   },
   methods: {
     onTankMove(x, y, angle) {
-      let maxSpeed = this.speedSlider.value / 100;
+      let allzero = x === y && x === 0;
+      if (this.sending && !allzero) return;
+      if (!allzero) {
+        this.sending = true;
+        setTimeout(() => (this.sending = false), 30);
+      }
 
+      let maxSpeed = this.speedSlider.value / 100;
       let yReal = y ** 2 * maxSpeed;
       let xReal = (1 - x ** 2) * yReal;
-      console.log(xReal, yReal);
-      // this.$socket.emit("tank", ls, rs);
+      if (y < 0) {
+        yReal = -yReal;
+        xReal = -xReal;
+      }
+
+      // console.log(xReal, yReal);
+      this.$socket.emit("tank", xReal, yReal);
     }
   }
 };
