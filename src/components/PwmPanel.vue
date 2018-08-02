@@ -1,6 +1,6 @@
 <template>
   <div id='PwmPanel'>
-    <JoyStickSingle @axis="onTankMove" :size="140"/>
+    <JoyStickSingle @axis="onTankMove" :size="140" />
     <div class="speed">
       <RovSlider :slider="speedSlider" v-model="speedSlider.value" />
     </div>
@@ -26,8 +26,13 @@ export default {
     };
   },
   methods: {
-    onTankMove(x, y) {
-      console.log(Math.round(x * 100), Math.round(y * 100));
+    onTankMove(x, y, angle) {
+      let maxSpeed = this.speedSlider.value / 100;
+
+      let yReal = y ** 2 * maxSpeed;
+      let xReal = (1 - x ** 2) * yReal;
+      console.log(xReal, yReal);
+      // this.$socket.emit("tank", ls, rs);
     }
   }
 };

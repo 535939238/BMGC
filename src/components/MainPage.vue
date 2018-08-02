@@ -21,6 +21,7 @@ import PwmPanel from "./PwmPanel";
 import TrackerVideo from "@/classes/TrackerVideo";
 import ControlPanel from "./ControlPanel";
 import mavlink from "@/assets/mavlink";
+import { DispatchHTMLEvent } from "@/classes/util";
 export default {
   name: "",
   components: {
@@ -43,6 +44,7 @@ export default {
     //opencv init
     const canvas = this.$refs.canvas;
     const app = document.getElementById("app");
+
     const rsEvent = () => {
       var hscale = app.clientWidth / canvas.width;
       var vscale = app.clientHeight / canvas.height;
@@ -51,9 +53,10 @@ export default {
       };
     };
     window.addEventListener("resize", rsEvent);
-    setTimeout(rsEvent, 200);
+
+    // setTimeout(rsEvent, 200);
     new TrackerVideo({
-      FPS: 1,
+      FPS: 0.0001,
       inputElement: this.$refs.source,
       outputElement: canvas,
       init:
@@ -63,7 +66,10 @@ export default {
             cv.cvtColor(frame, frame, cv.COLOR_RGB2GRAY, 0);
             return frame;
           };
-        }
+        },
+      nextTick() {
+        DispatchHTMLEvent("resize", window);
+      }
     });
 
     //ws

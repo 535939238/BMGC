@@ -33,8 +33,8 @@ export default {
     },
     bgStyle() {
       return {
-        width: this.size + 'px',
-        height: this.size + 'px'
+        width: this.size + "px",
+        height: this.size + "px"
       };
     }
   },
@@ -65,6 +65,8 @@ export default {
       let x = clientX - this.barStart.x;
       let y = clientY - this.barStart.y;
       let abx, aby;
+      let angle = Math.atan(x / y);
+      if (y < 0) angle += Math.PI;
 
       if (x * x + y * y < this.bgSize * this.bgSize) {
         this.barOffset.x = x;
@@ -72,14 +74,12 @@ export default {
         abx = x / this.bgSize;
         aby = y / this.bgSize;
       } else {
-        let angle = Math.atan(x / y);
-        if (y < 0) angle += Math.PI;
         abx = Math.sin(angle);
         aby = Math.cos(angle);
         this.barOffset.x = abx * this.bgSize;
         this.barOffset.y = aby * this.bgSize;
       }
-      this.$emit("axis", -abx, -aby);
+      this.$emit("axis", -abx, -aby, angle);
 
       //以上为UI部分，以下为socket部分
       /*let maxSpeed = this.speedSlider.value / 100;
@@ -90,6 +90,9 @@ export default {
         xReal = -xReal;
       }
       this.$socket.emit("tank", xReal, yReal);*/
+    },
+    onClick() {
+      console.log("click");
     }
   }
 };

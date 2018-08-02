@@ -4,7 +4,8 @@ class TrackerVideo {
     inputElement,
     outputElement,
     init,
-    frames
+    frames,
+    nextTick
   }) {
     this.$FPS = FPS;
     this.$delay = Math.floor(1000 / FPS);
@@ -36,25 +37,33 @@ class TrackerVideo {
         let frameFunc = isvideo ?
           () => {
             this.$capture.read(this.$frame);
-            let frame = this.$frames(this.$frame);
-            if (frame)
-              cv.imshow(this.$outputel, frame);
+            cv.imshow(this.$outputel, this.$frames(this.$frame));
+            // this.$frame.delete();
           } :
           () => {
             try {
               this.$frame = cv.imread(this.$el);
-              let frame = this.$frames(this.$frame);
-              if (frame)
-                cv.imshow(this.$outputel, frame);
-              this.$frame.delete();
+              cv.imshow(this.$outputel, this.$frames(this.$frame));
             } catch (e) {
               if (catcherr === false) {
                 catcherr = true;
                 console.error(e);
               }
+            } finally {
+              this.$frame.delete();
             }
           };
-        this._timerid = window.setInterval(frameFunc, this.$delay);
+
+        let onloadFunc = () => {
+          this.$el.removeEventListener('load', onloadFunc);
+          window.setTimeout(frameFunc, 0);
+          this._timerid = window.setInterval(frameFunc, this.$delay);
+          if (nextTick && nextTick instanceof Function)
+            window.setTimeout(nextTick, 0);
+        }
+        if (!isvideo) {
+          this.$el.addEventListener('load', onloadFunc);
+        }
       });
     }
   }

@@ -9,9 +9,6 @@ export default new Vuex.Store({
             [20,100],
             [0,100],
             [0,100]
-        ],
-        mutations:{
-            servo(state){}
-        }
+        ]
     }
 })

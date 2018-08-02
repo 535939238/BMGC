@@ -18,7 +18,7 @@
     <transition name="fade">
       <div id="Navigator-mask" @click="open=false" v-if="open"></div>
     </transition>
-    <transition name="menu">
+    <transition name="menu" @after-enter="onAfterEnter">
       <div id="Navigator-menu" v-if="open">
         <div class="title">设置</div>
         <set-block title="机械臂" @active="onActive(1)" :active="focus==1">
@@ -55,6 +55,7 @@
 <script>
 import setSlider from "./setSlider";
 import setBlock from "./setBlock";
+import { DispatchHTMLEvent } from "@/classes/util";
 export default {
   data() {
     return {
@@ -82,8 +83,11 @@ export default {
     onActive(index) {
       if (this.focus == index) this.focus = 0;
       else this.focus = index;
+    },
+    onAfterEnter() {
+      DispatchHTMLEvent("resize", window);
     }
-  },
+  }
   // mounted(){
   //   debugger;
   // }
