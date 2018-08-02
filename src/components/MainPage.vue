@@ -3,11 +3,11 @@
     <div class="outputdiv">
       <canvas ref="canvas" width="1000" height="800" :style="canvasStyle"></canvas>
     </div>
+    <MavLinkCtrl />
     <div class="rightPanel">
-      <ControlPanel name="机械臂控制">
-        <ServoPanel />
+      <ControlPanel name="概览">
       </ControlPanel>
-      <ControlPanel name="履带控制">
+      <ControlPanel name="机械臂/履带控制">
         <PwmPanel />
       </ControlPanel>
     </div>
@@ -16,18 +16,18 @@
 </template>
 
 <script>
-import ServoPanel from "./ServoPanel";
 import PwmPanel from "./PwmPanel";
 import TrackerVideo from "@/classes/TrackerVideo";
 import ControlPanel from "./ControlPanel";
 import mavlink from "@/assets/mavlink";
 import { DispatchHTMLEvent } from "@/classes/util";
+import MavLinkCtrl from "@/components/MavLinkCtrl";
 export default {
   name: "",
   components: {
     ControlPanel,
-    ServoPanel,
-    PwmPanel
+    PwmPanel,
+    MavLinkCtrl
   },
   data() {
     return {
@@ -111,7 +111,7 @@ export default {
 
     mavlinkParser.on("message", message => {
       console.log(message);
-    });    
+    });
   }
 };
 </script>
@@ -137,9 +137,15 @@ export default {
     flex-direction: column;
     right: 20px;
     width: 360px;
+    top: 70px;
     > * {
       min-height: 240px;
     }
+  }
+  #MavLinkCtrl{
+    position: fixed;
+    bottom: 0;
+    background: red;
   }
 }
 </style>

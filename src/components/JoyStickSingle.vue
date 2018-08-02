@@ -2,7 +2,7 @@
 <template>
   <div class="JoyStickSingle">
     <div class="bg" :style="bgStyle" ref="bg">
-      <CircleSlider v-if="slider" v-model="slider.value" :name="slider.name" />
+      <CircleSlider v-if="slidername" @input="$emit('slidervalue',arguments[0])" :value="slidervalue" :name="slidername" />
       <div class="bar" :style="barStyle" @mousedown="onMouseDown" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onMouseUp"></div>
     </div>
     <div v-once class="name">{{name}}</div>
@@ -13,7 +13,8 @@
 import CircleSlider from "./CircleSlider";
 export default {
   props: {
-    slider: null,
+    slidername: null,
+    slidervalue: null,
     size: Number,
     name: String
   },
@@ -52,6 +53,7 @@ export default {
         y: clientY
       };
       this.bgSize = this.$refs.bg.clientHeight / 2;
+      this.$emit("active");
       window.addEventListener("mousemove", this.onBaseMove);
       window.addEventListener("mouseup", this.onMouseUp);
     },
@@ -59,6 +61,7 @@ export default {
       this.barOffset.x = 0;
       this.barOffset.y = 0;
       this.onBaseMove({ clientX: this.barStart.x, clientY: this.barStart.y });
+      this.$emit("unactive");
       window.removeEventListener("mousemove", this.onBaseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
     },
@@ -86,7 +89,12 @@ export default {
         this.barOffset.x = abx * this.bgSize;
         this.barOffset.y = aby * this.bgSize;
       }
-      this.$emit("axis", -abx, -aby, angle);
+      this.axis = {
+        x: -abx,
+        y: -aby,
+        angle
+      };
+      this.$emit("axis", this.axis);
     }
   }
 };
