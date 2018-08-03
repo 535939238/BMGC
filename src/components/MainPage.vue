@@ -71,47 +71,7 @@ export default {
         DispatchHTMLEvent("resize", window);
       }
     });
-
-    //ws
-    let mavlinkParser = new mavlink.MAVLink(null, 1, 50);
-    let request = new mavlink.messages.request_data_stream(
-      1,
-      1,
-      mavlink.MAV_DATA_STREAM_ALL,
-      1,
-      1
-    );
-    request.pack(mavlinkParser);
-
-    // const ws = new WebSocket(`ws://${location.host}:5001`);
-    const ws = new WebSocket("ws://192.168.0.76:5001");
-    ws.binaryType = "arraybuffer";
-    ws.onopen = function() {
-      setInterval(function() {
-        let request = new mavlink.messages.request_data_stream(
-          1,
-          1,
-          mavlink.MAV_DATA_STREAM_ALL,
-          1,
-          1
-        );
-        let p = new Buffer(request.pack(mavlinkParser));
-        ws.send(p);
-      });
-    };
-
-    ws.onmessage = function({ data }) {
-      mavlinkParser.parseBuffer(Buffer.from(data));
-    };
-
-    mavlinkParser.on("HEARTBEAT", message => {
-      console.log("Got a heartbeat message!");
-      console.log(message); // message is a HEARTBEAT message
-    });
-
-    mavlinkParser.on("message", message => {
-      console.log(message);
-    });
+    console.log(this.$mavlink.mavlink);
   }
 };
 </script>
@@ -141,11 +101,6 @@ export default {
     > * {
       min-height: 240px;
     }
-  }
-  #MavLinkCtrl{
-    position: fixed;
-    bottom: 0;
-    background: red;
   }
 }
 </style>

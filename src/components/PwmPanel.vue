@@ -1,6 +1,6 @@
 <template>
   <div id='PwmPanel'>
-    <JoyStickSingle @active="HandleHand" @unactive="UnhandleHand" :size="100" slidername="基准幅度" name="机械臂" ref="armctrl" :slidervalue="$store.state.slider.armstep" @slidervalue="$store.commit('armstep',arguments[0])" />
+    <JoyStickSingle @click="onHandTiggle" @active="HandleHand" @unactive="UnhandleHand" :size="100" slidername="基准幅度" name="机械臂" :slidervalue="$store.state.slider.armstep" @slidervalue="$store.commit('armstep',arguments[0])" />
     <JoyStickSingle @axis="onTankMove" :size="100" name="履带" slidername="基准速度" :slidervalue="$store.state.slider.tankspeed" @slidervalue="$store.commit('tankspeed',arguments[0])" />
   </div>
 </template>
@@ -15,11 +15,21 @@ export default {
   data() {
     this.servoState = {
       x: 0.5,
-      y: 0.5
+      y: 0.5,
+      hand: true
     };
     return {};
   },
   methods: {
+    onHandTiggle() {
+      let { servo } = this.$store.state;
+      this.servoState.hand = !this.servoState.hand;
+      this.$socket.emit("servo", [
+        this.servoState.x,
+        this.servoState.y,
+        this.servoState.hand ? servo[2][1] : servo[2][0]
+      ]);
+    },
     onTankMove({ x, y, angle }) {
       let allzero = x === y && x === 0;
       if (this.sending && !allzero) return;
@@ -44,9 +54,8 @@ export default {
       speedlist.push.apply(speedlist, rspeed < 0 ? [-rspeed, 0] : [0, rspeed]);
       console.log(speedlist);*/
     },
-    HandleHand() {
+    HandleHand(axis) {
       let step = this.$store.state.slider.armstep / 5;
-      let armctrl = this.$refs.armctrl;
       let { servo } = this.$store.state;
       let [storex, storey, storemx, storemy] = [
         (servo[0][1] - servo[0][0]) / 100,
@@ -62,16 +71,14 @@ export default {
       };
 
       this.handTimerId = setInterval(() => {
-        let { x, y, angle } = armctrl.axis;
+        let { x, y, angle } = axis;
         this.servoState.x = caculate(this.servoState.x, x);
         this.servoState.y = caculate(this.servoState.y, y);
 
-        this.$socket.emit(
-          "servo",
+        this.$socket.emit("servo", [
           this.servoState.x * storex + storemx,
           this.servoState.y * storey + storemy
-        );
-        // console.log(this.servoState.x, this.servoState.y);
+        ]);
       }, 50);
     },
     UnhandleHand() {

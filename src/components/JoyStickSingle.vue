@@ -3,9 +3,9 @@
   <div class="JoyStickSingle">
     <div class="bg" :style="bgStyle" ref="bg">
       <CircleSlider v-if="slidername" @input="$emit('slidervalue',arguments[0])" :value="slidervalue" :name="slidername" />
-      <div class="bar" :style="barStyle" @mousedown="onMouseDown" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onMouseUp"></div>
+      <div class="bar" :style="barStyle" @mousedown="onMouseDown" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onMouseUp" @click="onClick"></div>
     </div>
-    <div v-once class="name">{{name}}</div>
+    <div v-once v-if="name" class="name">{{name}}</div>
   </div>
 </template>
 
@@ -19,6 +19,11 @@ export default {
     name: String
   },
   data() {
+    this.axis = {
+      x: 0,
+      y: 0,
+      angle: 0
+    };
     return {
       barOffset: {
         x: 0,
@@ -47,13 +52,18 @@ export default {
     }
   },
   methods: {
+    onClick(e) {
+      if (!this.unclicked === true) {
+        this.$emit("click", e);
+      }
+    },
     onMouseDown({ clientX, clientY }) {
       this.barStart = {
         x: clientX,
         y: clientY
       };
       this.bgSize = this.$refs.bg.clientHeight / 2;
-      this.$emit("active");
+      this.$emit("active", this.axis);
       window.addEventListener("mousemove", this.onBaseMove);
       window.addEventListener("mouseup", this.onMouseUp);
     },
@@ -62,6 +72,7 @@ export default {
       this.barOffset.y = 0;
       this.onBaseMove({ clientX: this.barStart.x, clientY: this.barStart.y });
       this.$emit("unactive");
+      setTimeout(() => (this.unclicked = false), 0);
       window.removeEventListener("mousemove", this.onBaseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
     },
@@ -71,7 +82,7 @@ export default {
     onTouchMove({ touches: [touch] }) {
       this.onBaseMove(touch);
     },
-    onBaseMove({ clientX, clientY }) {
+    onBaseMove({ clientX, clientY, movementX }) {
       let x = clientX - this.barStart.x;
       let y = clientY - this.barStart.y;
       let abx, aby;
@@ -89,11 +100,11 @@ export default {
         this.barOffset.x = abx * this.bgSize;
         this.barOffset.y = aby * this.bgSize;
       }
-      this.axis = {
-        x: -abx,
-        y: -aby,
-        angle
-      };
+
+      this.axis.x = -abx;
+      this.axis.y = -aby;
+      this.axis.angle = angle;
+      if (movementX !== undefined) this.unclicked = true;
       this.$emit("axis", this.axis);
     }
   }
