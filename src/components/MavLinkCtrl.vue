@@ -4,7 +4,7 @@
     <div class="inner">
       <JoyStickSingle name="x平面" :size="100" @active="onHandleAxis" @unactive="onUnhandleAxis" slidername="基准速度" :slidervalue="baseSpeed" @slidervalue="baseSpeed=arguments[0]" ref="ljoy" />
       <div class="armbutton">
-        <div class="circ">
+        <div class="circ" @click="armed = !armed">
           {{ armed ? "arming" : "disarmed" }}
         </div>
       </div>
@@ -27,16 +27,50 @@ export default {
       armed: false
     };
   },
+  watch: {
+    armed(val) {
+      this.$mavlink.go(
+        new this.$mavlink.messages.command_long(
+          this.$mavlink.target_system,
+          this.$mavlink.target_component,
+          this.$mavlink.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+          0,
+          val ? 1 : 0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        )
+      );
+      setTimeout(() => {
+        this.$mavlink.go(
+          new this.$mavlink.messages.set_mode(
+            this.$mavlink.target_system,
+            this.$mavlink.mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,
+            0
+          )
+        );
+      }, 200);
+      // master.mav.command_long_send(
+      //   master.target_system,
+      //   master.target_component,
+      //   mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+      //   0,
+      //   1, 0, 0, 0, 0, 0, 0)
+    }
+  },
   methods: {
     onHandleAxis() {
       let { ljoy: { axis: laxis }, rjoy: { axis: raxis } } = this.$refs;
       this.handTimerId = setInterval(() => {
-        // console.log(
-        //   Math.round(laxis.x * 1000),
-        //   Math.round(laxis.y * 1000),
-        //   Math.round(raxis.y * 500 + 500),
-        //   Math.round(raxis.x * 1000)
-        // );
+        console.log(
+          Math.round(laxis.x * 1000),
+          Math.round(laxis.y * 1000),
+          Math.round(raxis.y * 500 + 500),
+          Math.round(raxis.x * 1000)
+        );
         this.$mavlink.go(
           new this.$mavlink.messages.manual_control(
             this.$mavlink.target_system,
@@ -88,7 +122,7 @@ export default {
         transform: scale(0.3);
         margin: 10px;
         transition: all ease-in-out 0.4s;
-        font-size: .2rem;
+        font-size: 0.2rem;
         &:hover {
           transform: scale(1.1);
           margin: 20px;

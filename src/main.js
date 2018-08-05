@@ -5,11 +5,12 @@ import App from './App'
 import router from './router'
 import VueSocketio from 'vue-socket.io'
 import mavlink from "./classes/mavplugin"
+import store from "./store"
 
-Vue.use(VueSocketio, window.location.origin);
+Vue.use(VueSocketio, store.getters.commandStream);
 Vue.use(mavlink, {
-  logger: console,
-  url: "ws://192.168.0.76:5001"
+  // logger: console,
+  url: store.getters.mavlinkStream
 });
 Vue.config.productionTip = false
 

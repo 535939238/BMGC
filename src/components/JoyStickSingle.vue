@@ -101,6 +101,9 @@ export default {
         this.barOffset.y = aby * this.bgSize;
       }
 
+      if (abx < 0.1 && abx > -0.1) abx = 0;
+      if (aby < 0.1 && aby > -0.1) aby = 0;
+
       this.axis.x = -abx;
       this.axis.y = -aby;
       this.axis.angle = angle;

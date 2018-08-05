@@ -25,13 +25,21 @@ class MAVLinkSuper extends mavlink.MAVLink {
           1,
           1,
           mavlink.MAV_DATA_STREAM_ALL,
-          1,
+          5,
           1
         ));
       }, 200);
 
       this._heartBeatId = setInterval(() => {
-        console.log('heatbeat is undefined');
+        this.go(new mavlink.messages.heartbeat(
+          mavlink.MAV_TYPE_GCS,
+          mavlink.MAV_AUTOPILOT_INVALID,
+          0,
+          0,
+          0
+        ));
+        // master.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_GCS, mavutil.mavlink.MAV_AUTOPILOT_INVALID,
+        // 0, 0, 0)
       }, 1000);
     };
 
@@ -44,6 +52,8 @@ class MAVLinkSuper extends mavlink.MAVLink {
     }
 
     this.ws = websocket;
+    this.file = this.ws;
+    this.ws.write = this.ws.send;
   }
 
   /**
@@ -60,7 +70,10 @@ class MAVLinkSuper extends mavlink.MAVLink {
 }
 
 MAVLinkSuper.prototype.messages = mavlink.messages;
+MAVLinkSuper.prototype.mavlink = mavlink;
 MAVLinkSuper.prototype.target_system = 1;
+// MAVLinkSuper.prototype.target_component = 50;
+MAVLinkSuper.prototype.target_component = 1;
 
 // plugin for extract mavlink control
 var install = function (Vue, {

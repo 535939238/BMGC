@@ -25,16 +25,16 @@
         </set-block>
         <set-block title="传输流" @active="onActive(2)" :active="focus==2">
           <div class="single-input">
-            <input v-model="videoStreamAddress" class="msinput" placeholder="/5002" />
             <span>视频流</span>
+            <input v-model="$store.state.stream.video" class="msinput" placeholder="/5002" />
           </div>
           <div class="single-input">
-            <input v-model="mavlinkStreamAddress" class="msinput" placeholder="/5001">
             <span>mavlink</span>
+            <input v-model="$store.state.stream.mavlink" class="msinput" placeholder="/5001">
           </div>
           <div class="single-input">
-            <input v-model="commandStreamAddress" class="msinput" placeholder="/">
             <span>指令流</span>
+            <input v-model="$store.state.stream.command" class="msinput" placeholder="/">
           </div>
         </set-block>
         <set-block title="窗口" @active="onActive(3)" :active="focus==3">
@@ -68,10 +68,7 @@ export default {
         { name: "右臂" }
       ],
       value: [10, 20],
-      focus: 2,
-      videoStreamAddress: "",
-      mavlinkStreamAddress: "",
-      commandStreamAddress: "",
+      focus: 0,
       open: false
     };
   },
@@ -161,6 +158,7 @@ export default {
         color: white;
         align-self: flex-start;
         margin-top: 5px;
+        margin-bottom: 5px;
         margin-left: 1.2rem;
         font-size: 0.8rem;
       }

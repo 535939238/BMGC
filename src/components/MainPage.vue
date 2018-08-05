@@ -1,33 +1,35 @@
 <template>
   <div id='MainPage'>
-    <div class="outputdiv">
+    <!-- <div class="outputdiv">
       <canvas ref="canvas" width="1000" height="800" :style="canvasStyle"></canvas>
-    </div>
+    </div> -->
+    <div class="source" ref="source" :style="{'background-image':`url(${$store.getters.videoStream})`}"></div>
     <MavLinkCtrl />
     <div class="rightPanel">
       <ControlPanel name="概览">
+        <SensorPanel />
       </ControlPanel>
       <ControlPanel name="机械臂/履带控制">
         <PwmPanel />
       </ControlPanel>
     </div>
-    <img ref="source" src="/static/defaultBg.jpg" style="display:none">
   </div>
 </template>
 
 <script>
-import PwmPanel from "./PwmPanel";
 import TrackerVideo from "@/classes/TrackerVideo";
 import ControlPanel from "./ControlPanel";
-import mavlink from "@/assets/mavlink";
 import { DispatchHTMLEvent } from "@/classes/util";
-import MavLinkCtrl from "@/components/MavLinkCtrl";
+import MavLinkCtrl from "./MavLinkCtrl";
+import PwmPanel from "./PwmPanel";
+import SensorPanel from "./SensorPanel";
 export default {
   name: "",
   components: {
     ControlPanel,
     PwmPanel,
-    MavLinkCtrl
+    MavLinkCtrl,
+    SensorPanel
   },
   data() {
     return {
@@ -42,36 +44,35 @@ export default {
     };
 
     //opencv init
-    const canvas = this.$refs.canvas;
-    const app = document.getElementById("app");
+    // const canvas = this.$refs.canvas;
+    // const app = document.getElementById("app");
 
-    const rsEvent = () => {
-      var hscale = app.clientWidth / canvas.width;
-      var vscale = app.clientHeight / canvas.height;
-      this.canvasStyle = {
-        transform: `scale(${Math.max(hscale, vscale)})`
-      };
-    };
-    window.addEventListener("resize", rsEvent);
+    // const rsEvent = () => {
+    //   var hscale = app.clientWidth / canvas.width;
+    //   var vscale = app.clientHeight / canvas.height;
+    //   this.canvasStyle = {
+    //     transform: `scale(${Math.max(hscale, vscale)})`
+    //   };
+    // };
+    // window.addEventListener("resize", rsEvent);
 
-    // setTimeout(rsEvent, 200);
-    new TrackerVideo({
-      FPS: 0,
-      inputElement: this.$refs.source,
-      outputElement: canvas,
-      init:
-        window.VideoInitFunc ||
-        async function() {
-          return function(frame) {
-            cv.cvtColor(frame, frame, cv.COLOR_RGB2GRAY, 0);
-            return frame;
-          };
-        },
-      nextTick() {
-        DispatchHTMLEvent("resize", window);
-      }
-    });
-    console.log(this.$mavlink.mavlink);
+    // // setTimeout(rsEvent, 200);
+    // new TrackerVideo({
+    //   FPS: 0,
+    //   inputElement: this.$refs.source,
+    //   outputElement: canvas,
+    //   init:
+    //     window.VideoInitFunc ||
+    //     async function() {
+    //       return function(frame) {
+    //         cv.cvtColor(frame, frame, cv.COLOR_RGB2GRAY, 0);
+    //         return frame;
+    //       };
+    //     },
+    //   nextTick() {
+    //     DispatchHTMLEvent("resize", window);
+    //   }
+    // });
   }
 };
 </script>
@@ -101,6 +102,17 @@ export default {
     > * {
       min-height: 240px;
     }
+  }
+  .source {
+    transform: rotate(180deg);
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 }
 </style>
