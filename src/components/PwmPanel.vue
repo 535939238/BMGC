@@ -13,7 +13,6 @@
 
 <script>
 import JoyStickSingle from "./JoyStickSingle";
-import { BindKey } from "@/classes/KeyPress";
 import { createWatchList } from "@/classes/util";
 
 const watch = createWatchList({
@@ -24,46 +23,12 @@ const watch = createWatchList({
     right: ["HandleHand", { x: 0, y: 1 }]
   }
 });
-
 export default {
   name: "",
   components: {
     JoyStickSingle
   },
-  watch: {
-    "$store.state.keyBoard.hand.up"(val, oval) {
-      BindKey(
-        val,
-        oval,
-        () => this.onHandleHand({ x: 1, y: 0 }),
-        () => this.unHandleHand()
-      );
-    },
-    "$store.state.keyBoard.hand.down"(val, oval) {
-      BindKey(
-        val,
-        oval,
-        () => this.onHandleHand({ x: -1, y: 0 }),
-        () => this.unHandleHand()
-      );
-    },
-    "$store.state.keyBoard.hand.down"(val, oval) {
-      BindKey(
-        val,
-        oval,
-        () => this.onHandleHand({ x: -1, y: 0 }),
-        () => this.unHandleHand()
-      );
-    },
-    "$store.state.keyBoard.hand.down"(val, oval) {
-      BindKey(
-        val,
-        oval,
-        () => this.onHandleHand({ x: -1, y: 0 }),
-        () => this.unHandleHand()
-      );
-    }
-  },
+  watch,
   data() {
     this.servoState = {
       x: this.$store.state.servo[0].middle / 100,
