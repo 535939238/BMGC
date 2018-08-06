@@ -10,3 +10,13 @@ export function DispatchHTMLEvent(type, element = window) {
   e.initEvent(type, true, true);
   element.dispatchEvent(e);
 }
+
+const prefix = "$store.state.keyBoard."
+export function createWatchList(list) {
+  const result = {};
+  Object.keys(list).forEach(key1 => {
+    list[key1].forEach(key2=>{
+      result[`${prefix} `]
+    })
+  });
+}

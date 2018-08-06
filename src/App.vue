@@ -8,6 +8,7 @@
 <script>
 import Navigator from "@/components/Navigator";
 import store from "@/store/index";
+import KeyPress from "@/classes/KeyPress";
 export default {
   name: "App",
   components: {

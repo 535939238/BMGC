@@ -24,6 +24,7 @@ const store = new Vuex.Store({
       mavlink: "ws://192.168.0.76:5001",
       command: "${PROTOCOL}//${SERVER}:${PORT}"
     },
+    keyBoard: {},
     WindowSize: {
       width: 0,
       height: 0
@@ -58,6 +59,34 @@ const store = new Vuex.Store({
     }
   }
 });
+
+setTimeout(() => {
+  store.state.keyBoard = {
+    hand: {
+      up: 101,
+      down: 98,
+      left: 97,
+      right: 99
+    },
+    tank: {
+      up: 38,
+      down: 40,
+      left: 37,
+      right: 39
+    },
+    rov: {
+      front: 87,
+      back: 83,
+      left: 65,
+      right: 68,
+      up: 73,
+      down: 75,
+      tleft: 74,
+      tright: 76
+    }
+  }
+}, 1000)
+
 
 function GenerateLocation(url, defau) {
   if (!url) return GenerateLocation(defau);
