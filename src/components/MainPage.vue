@@ -4,7 +4,6 @@
       <canvas ref="canvas" width="1000" height="800" :style="canvasStyle"></canvas>
     </div> -->
     <div class="source" ref="source" :style="{'background-image':`url(${$store.getters.videoStream})`}"></div>
-    <MavLinkCtrl />
     <div class="rightPanel">
       <ControlPanel name="概览">
         <SensorPanel />
@@ -13,6 +12,8 @@
         <PwmPanel />
       </ControlPanel>
     </div>
+
+    <MavLinkCtrl />
   </div>
 </template>
 
@@ -97,14 +98,13 @@ export default {
     display: flex;
     flex-direction: column;
     right: 20px;
-    width: 360px;
+    width: 320px;
     top: 70px;
     > * {
-      min-height: 240px;
+      min-height: 180px;
     }
   }
   .source {
-    transform: rotate(180deg);
     position: fixed;
     left: 0;
     top: 0;

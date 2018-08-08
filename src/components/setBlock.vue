@@ -22,7 +22,7 @@ export default {
   text-align: left;
   $titlebg: #00c1de;
   &.active {
-    box-shadow: 0px 0px 20px #000000ff;
+    box-shadow: 0px 0px 20px rgb(0, 0, 0);
     margin-bottom: 1rem;
     > .settitle {
       background: $titlebg;
@@ -39,7 +39,7 @@ export default {
   }
   .setcontains {
     padding: 0.7rem 0rem;
-    background: #5e6366cc;
+    background: rgba(94, 99, 102, 0.8);
   }
 }
 </style>

@@ -161,7 +161,7 @@ export default {
     padding: 3px 10px;
     min-width: 50px;
     border-radius: 3px;
-    background: #00000080;
+    background: rgba(0, 0, 0, 0.5);
     font-size: 0.7rem;
     text-align: center;
     margin-top: 5px;

@@ -3,7 +3,7 @@
   <div class="CircleSlider">
     <svg ref="svg" viewBox="0 0 120 120">
       <path stroke="#00be7e" fill="none" stroke-width="2" :d="cpathd"></path>
-      <circle fill="#00be7e" r="7" :cx="bpoint.x" :cy="bpoint.y" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseout="onMouseOut"></circle>
+      <circle fill="#00be7e" r="7" :cx="bpoint.x" :cy="bpoint.y" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseout="onMouseOut" @touchmove="onTouchMove" @touchstart="onTouchStart" @touchend="onTouchEnd"></circle>
     </svg>
     <transition name="fade">
       <div class="tag" v-if="tagshow" :style="tagStyle">
@@ -87,7 +87,27 @@ export default {
     },
     onMouseOut(e) {
       this.tagshow = false;
+    },
+    onTouchMove({ touches: [touch] }) {
+      this.onBaseMove(touch);
+    },
+    onTouchStart({ touches: [touch], path }) {
+      let size = path[2].clientHeight / 2;
+      // console.log(size);
+
+      let angle = this.value * 2 * Math.PI;
+
+      this.centerP = {
+        x: touch.clientX - Math.sin(angle) * size,
+        y: touch.clientY - Math.cos(angle) * size
+      };
+    },
+    onTouchEnd({ touches: [touch] }) {
+      this.onMouseUp(touch);
     }
+  },
+  mounted() {
+    global.vm = this;
   }
 };
 </script>
@@ -108,7 +128,7 @@ export default {
     padding: 3px 7px;
     border-radius: 3px;
     transform: translate(-50%, -50%);
-    background: #00000080;
+    background: rgba(0, 0, 0, 0.5);
     white-space: nowrap;
     z-index: 100000;
   }

@@ -31,15 +31,24 @@ class MAVLinkSuper extends mavlink.MAVLink {
       }, 200);
 
       this._heartBeatId = setInterval(() => {
-        this.go(new mavlink.messages.heartbeat(
-          mavlink.MAV_TYPE_GCS,
-          mavlink.MAV_AUTOPILOT_INVALID,
-          0,
-          0,
-          0
-        ));
-        // master.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_GCS, mavutil.mavlink.MAV_AUTOPILOT_INVALID,
-        // 0, 0, 0)
+        // this.go(new mavlink.messages.heartbeat(
+        //   mavlink.MAV_TYPE_GCS,
+        //   mavlink.MAV_AUTOPILOT_INVALID,
+        //   0,
+        //   0,
+        //   0
+        // ));
+        let command = {
+          type: "heatbeat",
+          args: [
+            mavlink.MAV_TYPE_GCS,
+            mavlink.MAV_AUTOPILOT_INVALID,
+            0,
+            0,
+            0
+          ]
+        };
+        this.go(command);
       }, 1000);
     };
 
@@ -63,6 +72,10 @@ class MAVLinkSuper extends mavlink.MAVLink {
    * @memberof MAVLinkSuper
    */
   go(request) {
+    if (request.type) {
+      this.ws.send(Buffer.from(JSON.stringify(request)));
+      return;
+    }
     let p = new Buffer(request.pack(this));
     this.ws.send(p);
     // console.log(p)

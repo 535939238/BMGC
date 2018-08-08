@@ -141,8 +141,30 @@ export default {
     align-self: flex-end;
     color: #fc5858;
     margin-left: -40px;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
     z-index: 100000;
+  }
+  @media (max-width: 900px) {
+    $panpad: 5%;
+    $pantop: 20%;
+    > .JoyStickSingle {
+      position: fixed;
+      &:nth-child(1) {
+        left: $panpad;
+        top: $pantop;
+      }
+      &:nth-child(3) {
+        right: $panpad;
+        top: $pantop;
+      }
+    }
+    > .rsbtn {
+      margin: 0 !important;
+      position: fixed;
+      left: $panpad - 3%;
+      top: $pantop + 20%;
+      transform: scale(1.3)
+    }
   }
 }
 </style>

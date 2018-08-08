@@ -2,13 +2,13 @@
 <template>
   <div id='MavLinkCtrl'>
     <div class="inner">
-      <JoyStickSingle name="x平面" :size="100" @active="onHandleAxis" @unactive="onUnhandleAxis" slidername="基准速度" :slidervalue="baseSpeed" @slidervalue="baseSpeed=arguments[0]" ref="ljoy" />
+      <JoyStickSingle name="x平面" :size="100" slidername="基准速度" :slidervalue="baseSpeed" @slidervalue="baseSpeed=arguments[0]" ref="ljoy" />
       <div class="armbutton">
-        <div class="circ" @click="armed = !armed">
+        <div class="circ" :class="{armed}" @click="armed = !armed">
           {{ armed ? "arming" : "disarmed" }}
         </div>
       </div>
-      <JoyStickSingle name="深度与偏航" :size="100" @active="onHandleAxis" @unactive="onUnhandleAxis" slidername="云台" :slidervalue="cloudServo" @slidervalue="cloudServo=arguments[0]" ref="rjoy" />
+      <JoyStickSingle name="深度与偏航" :size="100" slidername="云台" :slidervalue="cloudServo" @slidervalue="cloudServo=arguments[0]" ref="rjoy" />
     </div>
   </div>
 </template>
@@ -28,6 +28,11 @@ export default {
     };
   },
   watch: {
+    cloudServo(val) {
+      val = val * 0.0175 + 0.1085;
+      // console.log(val);
+      this.$socket.emit("tilt", val);
+    },
     armed(val) {
       this.$mavlink.go(
         new this.$mavlink.messages.command_long(
@@ -44,15 +49,19 @@ export default {
           0
         )
       );
-      setTimeout(() => {
-        this.$mavlink.go(
-          new this.$mavlink.messages.set_mode(
-            this.$mavlink.target_system,
-            this.$mavlink.mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,
-            0
-          )
-        );
-      }, 200);
+      if (val) {
+        this.onHandleAxis();
+      } else this.onUnhandleAxis();
+      // setTimeout(() => {
+      //   this.$mavlink.go(
+      //     new this.$mavlink.messages.set_mode(
+      //       this.$mavlink.target_system,
+      //       this.$mavlink.mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,
+      //       0
+      //     )
+      //   );
+      // }, 200);
+
       // master.mav.command_long_send(
       //   master.target_system,
       //   master.target_component,
@@ -65,22 +74,18 @@ export default {
     onHandleAxis() {
       let { ljoy: { axis: laxis }, rjoy: { axis: raxis } } = this.$refs;
       this.handTimerId = setInterval(() => {
-        console.log(
-          Math.round(laxis.x * 1000),
-          Math.round(laxis.y * 1000),
-          Math.round(raxis.y * 500 + 500),
-          Math.round(raxis.x * 1000)
-        );
-        this.$mavlink.go(
-          new this.$mavlink.messages.manual_control(
+        let command = {
+          type: "manual_control",
+          args: [
             this.$mavlink.target_system,
             Math.round(laxis.x * 1000),
             Math.round(laxis.y * 1000),
             Math.round(raxis.y * 500 + 500),
             Math.round(raxis.x * 1000),
             0
-          )
-        );
+          ]
+        };
+        this.$mavlink.go(command);
       }, 50);
     },
     onUnhandleAxis() {
@@ -105,17 +110,21 @@ export default {
     border-top-left-radius: $radius;
     border-top-right-radius: $radius;
     padding: 20px;
-    background: #00000080;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     > .armbutton {
       align-self: flex-end;
       margin-bottom: 1rem;
       .circ {
+        &.armed {
+          background: #2ac88f;
+        }
+        background: #fc5857;
+        color: white;
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: gray;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -128,6 +137,16 @@ export default {
           margin: 20px;
         }
       }
+    }
+  }
+  @media (max-width: 900px) {
+    > .inner {
+      width: 60%;
+    }
+    .circ {
+      transform: scale(1.1) !important;
+      margin: 0px !important;
+      margin-bottom: -20px !important;
     }
   }
 }
