@@ -1,32 +1,48 @@
 <template>
   <div id='MainPage'>
-    <div class="outputdiv">
+    <!-- <div class="outputdiv">
       <canvas ref="canvas" width="1000" height="800" :style="canvasStyle"></canvas>
-    </div>
+    </div> -->
+    <div class="source" ref="source" :style="{'background-image':`url(${$store.state.viewbox[4] ? $store.getters.videoStream : ''})`}"></div>
     <div class="rightPanel">
-      <ControlPanel name="机械臂控制">
-        <ServoPanel />
-      </ControlPanel>
-      <ControlPanel name="履带控制">
-        <PwmPanel />
-      </ControlPanel>
+      <transition name="fade">
+        <ControlPanel v-if="$store.state.viewbox[0]" name="概览">
+          <SensorPanel />
+        </ControlPanel>
+      </transition>
+      <transition name="fade">
+        <ControlPanel v-if="$store.state.viewbox[1]" name="机械臂/履带控制">
+          <PwmPanel />
+        </ControlPanel>
+      </transition>
+      <transition name="fade">
+        <ControlPanel v-if="$store.state.viewbox[2]">
+          <TextPanel />
+        </ControlPanel>
+      </transition>
     </div>
-    <img ref="source" src="/static/defaultBg.jpg" style="display:none">
+    <transition name="fadeUp">
+      <MavLinkCtrl v-show="$store.state.viewbox[3]" />
+    </transition>
   </div>
 </template>
 
 <script>
-import ServoPanel from "./ServoPanel";
-import PwmPanel from "./PwmPanel";
 import TrackerVideo from "@/classes/TrackerVideo";
 import ControlPanel from "./ControlPanel";
-import mavlink from "@/assets/mavlink";
+import { DispatchHTMLEvent } from "@/classes/util";
+import MavLinkCtrl from "./MavLinkCtrl";
+import PwmPanel from "./PwmPanel";
+import SensorPanel from "./SensorPanel";
+import TextPanel from "./TextPanel";
 export default {
   name: "",
   components: {
     ControlPanel,
-    ServoPanel,
-    PwmPanel
+    PwmPanel,
+    MavLinkCtrl,
+    SensorPanel,
+    TextPanel
   },
   data() {
     return {
@@ -41,71 +57,35 @@ export default {
     };
 
     //opencv init
-    const canvas = this.$refs.canvas;
-    const app = document.getElementById("app");
-    const rsEvent = () => {
-      var hscale = app.clientWidth / canvas.width;
-      var vscale = app.clientHeight / canvas.height;
-      this.canvasStyle = {
-        transform: `scale(${Math.max(hscale, vscale)})`
-      };
-    };
-    window.addEventListener("resize", rsEvent);
-    setTimeout(rsEvent, 200);
-    new TrackerVideo({
-      FPS: 1,
-      inputElement: this.$refs.source,
-      outputElement: canvas,
-      init:
-        window.VideoInitFunc ||
-        async function() {
-          return function(frame) {
-            cv.cvtColor(frame, frame, cv.COLOR_RGB2GRAY, 0);
-            return frame;
-          };
-        }
-    });
+    // const canvas = this.$refs.canvas;
+    // const app = document.getElementById("app");
 
-    //ws
-    let mavlinkParser = new mavlink.MAVLink(null, 1, 50);
-    let request = new mavlink.messages.request_data_stream(
-      1,
-      1,
-      mavlink.MAV_DATA_STREAM_ALL,
-      1,
-      1
-    );
-    request.pack(mavlinkParser);
+    // const rsEvent = () => {
+    //   var hscale = app.clientWidth / canvas.width;
+    //   var vscale = app.clientHeight / canvas.height;
+    //   this.canvasStyle = {
+    //     transform: `scale(${Math.max(hscale, vscale)})`
+    //   };
+    // };
+    // window.addEventListener("resize", rsEvent);
 
-    // const ws = new WebSocket(`ws://${location.host}:5001`);
-    const ws = new WebSocket("ws://192.168.0.76:5001");
-    ws.binaryType = "arraybuffer";
-    ws.onopen = function() {
-      setInterval(function() {
-        let request = new mavlink.messages.request_data_stream(
-          1,
-          1,
-          mavlink.MAV_DATA_STREAM_ALL,
-          1,
-          1
-        );
-        let p = new Buffer(request.pack(mavlinkParser));
-        ws.send(p);
-      });
-    };
-
-    ws.onmessage = function({ data }) {
-      mavlinkParser.parseBuffer(Buffer.from(data));
-    };
-
-    mavlinkParser.on("HEARTBEAT", message => {
-      console.log("Got a heartbeat message!");
-      console.log(message); // message is a HEARTBEAT message
-    });
-
-    mavlinkParser.on("message", message => {
-      console.log(message);
-    });
+    // // setTimeout(rsEvent, 200);
+    // new TrackerVideo({
+    //   FPS: 0,
+    //   inputElement: this.$refs.source,
+    //   outputElement: canvas,
+    //   init:
+    //     window.VideoInitFunc ||
+    //     async function() {
+    //       return function(frame) {
+    //         cv.cvtColor(frame, frame, cv.COLOR_RGB2GRAY, 0);
+    //         return frame;
+    //       };
+    //     },
+    //   nextTick() {
+    //     DispatchHTMLEvent("resize", window);
+    //   }
+    // });
   }
 };
 </script>
@@ -121,7 +101,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: url(/static/defaultBg.jpg);
+    background-image: url(/static/HXbackground.png);
     background-size: cover;
     background-position: center;
   }
@@ -130,10 +110,21 @@ export default {
     display: flex;
     flex-direction: column;
     right: 20px;
-    width: 360px;
+    width: 320px;
+    top: 70px;
     > * {
-      min-height: 240px;
+      min-height: 180px;
     }
+  }
+  .source {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 }
 </style>

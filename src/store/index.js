@@ -3,15 +3,109 @@ import Vuex from "vuex"
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
-    state:{
-        servo: [
-            [20,100],
-            [0,100],
-            [0,100]
-        ],
-        mutations:{
-            servo(state){}
-        }
+const store = new Vuex.Store({
+  state: {
+    servo: [{
+      range: [0, 20],
+      middle: 43
+    }, {
+      range: [0, 20],
+      middle: 19
+    }, {
+      range: [7, 9],
+      middle: 0
+    }],
+    slider: {
+      armstep: 0.03,
+    },
+    stream: {
+      video: "${PROTOCOL}//${SERVER}:8080/?action=stream",
+      // mavlink: "ws://${SERVER}:5001",
+      mavlink: "ws://${SERVER}:5001",
+      command: "${PROTOCOL}//${SERVER}:${PORT}"
+    },
+    keyBoard: {},
+    viewbox: [true, true, true, true, true],
+    WindowSize: {
+      width: 0,
+      height: 0
     }
+  },
+  mutations: {
+    armstep(state, val) {
+      state.slider.armstep = val
+    },
+    tankspeed(state, val) {
+      state.slider.tankspeed = val;
+    },
+    init(state, setting) {
+      Object.keys(setting).forEach(key => {
+        state[key] = setting[key]
+      });
+    },
+    windowSize(state, width, height) {
+      state.WindowSize.width = width;
+      state.WindowSize.height = height;
+    }
+  },
+  getters: {
+    videoStream(state) {
+      return GenerateLocation(state.stream.video, "${PROTOCOL}//${SERVER}:8080?action=stream");
+    },
+    mavlinkStream(state) {
+      return GenerateLocation(state.stream.mavlink, "ws://${SERVER}:5001");
+    },
+    commandStream(state) {
+      return GenerateLocation(state.stream.command, "${PROTOCOL}//${SERVER}:${PORT}");
+    }
+  }
+});
+
+setTimeout(() => {
+  store.state.keyBoard = {
+    hand: {
+      up: 101,
+      down: 98,
+      left: 97,
+      right: 99
+    },
+    tank: {
+      up: 38,
+      down: 40,
+      left: 37,
+      right: 39
+    },
+    rov: {
+      front: 87,
+      back: 83,
+      left: 65,
+      right: 68,
+      up: 73,
+      down: 75,
+      tleft: 74,
+      tright: 76
+    }
+  }
+}, 1000)
+
+
+function GenerateLocation(url, defau) {
+  if (!url) return GenerateLocation(defau);
+  let result = url;
+  let ReplaceKeys = {
+    "${PROTOCOL}": window.location.protocol,
+    "${SERVER}": window.location.hostname,
+    "${PORT}": window.location.port
+  };
+  Object.keys(ReplaceKeys).forEach(key => {
+    result = result.replace(key, ReplaceKeys[key])
+  });
+  return result;
+}
+
+const app = document.getElementById("app");
+window.addEventListener("resize", () => {
+  store.commit("windowSize", app.clientWidth, app.clientHeight);
 })
+
+export default store;

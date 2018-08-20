@@ -1,14 +1,21 @@
 <!-- setSlider  -->
 <template>
-    <div class="setSlider">
-        <slider :value="value" @input="$emit('input',arguments[0])" v-bind="sliderStyle" />
-        <div class="contains">
-            <span>{{name}} :</span>
-            <input type="number" class="msinput" v-model.number="value[0]" />
-            <span> - </span>
-            <input type="number" class="msinput" v-model.number="value[1]" />
-        </div>
+  <div class="setSlider" v-if="value">
+    <slider v-model="value.range" v-bind="sliderStyle" />
+    <div class="contains">
+      <div class="contains-line">
+        <span>{{name}} :</span>
+        <input type="number" class="msinput" v-model.number="value.range[0]" />
+        <span> - </span>
+        <input type="number" class="msinput" v-model.number="value.range[1]" />
+      </div>
+      <div class="contains-line">
+        <span>初值：</span>
+        <slider v-model="value.middle" v-bind="sliderStyle" />
+        <input type="number" class="msinput sm" v-model.number="value.middle">
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -45,14 +52,31 @@ export default {
     padding: 0.4rem 1rem 0rem 1rem;
     font-size: 0.8rem;
     display: flex;
-    > .msinput {
-      max-width: 50px;
-      text-align: center;
-      border-radius: 3px;
-      -moz-appearance: textfield;
-      &::-webkit-outer-spin-button,
-      &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
+    flex-direction: column;
+    > .contains-line {
+      & + .contains-line {
+        margin-top: 5px;
+      }
+      display: flex;
+      justify-content: space-around;
+      > span:nth-child(1) {
+        flex-basis: 25%;
+      }
+      > .msinput {
+        max-width: 50px;
+        text-align: center;
+        border-radius: 3px;
+        -moz-appearance: textfield;
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+        }
+        &.sm{
+          min-width: 30px;
+        }
+      }
+      > .vue-slider-component {
+        flex-basis: 60%;
       }
     }
     > span {

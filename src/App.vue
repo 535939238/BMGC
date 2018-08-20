@@ -8,6 +8,7 @@
 <script>
 import Navigator from "@/components/Navigator";
 import store from "@/store/index";
+import KeyPress from "@/classes/KeyPress";
 export default {
   name: "App",
   components: {
@@ -28,13 +29,19 @@ export default {
   position: fixed;
   width: 100%;
   height: 100%;
+  left: 0;
+  top: 0;
+  background-image: url(/static/defaultBg.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 body {
   margin: 0;
   height: 100%;
 }
 .msinput {
-  background: #eeeeee80;
+  background: rgba(238, 238, 238, 0.5);
   border: 0;
   color: white;
   &:focus {
@@ -53,5 +60,21 @@ body {
   vertical-align: middle;
   fill: currentColor;
   overflow: hidden;
+}
+.fadeDown-enter-active {
+  animation: fadeInDown;
+  animation-duration: 0.4s;
+}
+.fadeDown-leave-active {
+  animation: fadeOutUp;
+  animation-duration: 0.4s;
+}
+.fadeUp-enter-active {
+  animation: fadeInUp;
+  animation-duration: 0.4s;
+}
+.fadeUp-leave-active {
+  animation: fadeOutDown;
+  animation-duration: 0.4s;
 }
 </style>
