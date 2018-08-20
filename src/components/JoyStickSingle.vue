@@ -1,9 +1,9 @@
 <!-- JoyStickSingle -->
 <template>
   <div class="JoyStickSingle">
-    <div class="bg" :style="bgStyle" ref="bg">
+    <div class="bg" :style="bgStyle">
       <CircleSlider v-if="slidername" @input="$emit('slidervalue',arguments[0])" :value="slidervalue" :name="slidername" />
-      <div class="bar" :style="barStyle" @mousedown="onMouseDown" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onMouseUp" @click="onClick"></div>
+      <div ref="bar" class="bar" :class="{downed}" :style="barStyle" @mousedown="onMouseDown" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onMouseUp" @click="onClick"></div>
     </div>
     <div v-once v-if="name" class="name">{{name}}</div>
   </div>
@@ -16,19 +16,24 @@ export default {
     slidername: null,
     slidervalue: null,
     size: Number,
-    name: String
+    name: String,
+    axis: {
+      type: Object,
+      default() {
+        return {
+          x: 0,
+          y: 0
+        };
+      }
+    }
   },
   data() {
-    this.axis = {
-      x: 0,
-      y: 0,
-      angle: 0
-    };
     return {
       barOffset: {
         x: 0,
         y: 0
-      }
+      },
+      downed: false
     };
   },
   components: {
@@ -36,12 +41,14 @@ export default {
   },
   computed: {
     barStyle() {
+      let x = -this.axis.x * this.size / 2;
+      let y = -this.axis.y * this.size / 2;
       let style = {
-        transform: `translate(${this.barOffset.x}px,${this.barOffset.y}px)`
+        transform: `translate(${x}px,${y}px)`
       };
-      if (this.barOffset.x != 0 && this.barOffset.y != 0) {
-        style.transition = "none";
-      }
+      // if (x != 0 && y != 0) {
+      //   style.transition = "none";
+      // }
       return style;
     },
     bgStyle() {
@@ -62,7 +69,7 @@ export default {
         x: clientX,
         y: clientY
       };
-      this.bgSize = this.$refs.bg.clientHeight / 2;
+      this.downed = true;
       this.$emit("active", this.axis);
       window.addEventListener("mousemove", this.onBaseMove);
       window.addEventListener("mouseup", this.onMouseUp);
@@ -70,16 +77,26 @@ export default {
     onMouseUp() {
       this.barOffset.x = 0;
       this.barOffset.y = 0;
-      this.onBaseMove({ clientX: this.barStart.x, clientY: this.barStart.y });
+      // this.onBaseMove({ clientX: this.barStart.x, clientY: this.barStart.y });
+      this.axis.x = 0;
+      this.axis.y = 0;
       this.$emit("unactive");
+      this.downed = false;
       setTimeout(() => (this.unclicked = false), 0);
       window.removeEventListener("mousemove", this.onBaseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
     },
-    onTouchStart({ touches: [touch] }) {
+    onTouchStart({ touches }) {
+      let touch;
+      for (let t in touches)
+        if (touches[t].target === this.$refs.bar) touch = touches[t];
       this.onMouseDown(touch);
     },
-    onTouchMove({ touches: [touch] }) {
+    onTouchMove({ touches }) {
+      // console.log(arguments[0].touches);
+      let touch;
+      for (let t in touches)
+        if (touches[t].target === this.$refs.bar) touch = touches[t];
       this.onBaseMove(touch);
     },
     onBaseMove({ clientX, clientY, movementX }) {
@@ -89,16 +106,12 @@ export default {
       let angle = Math.atan(x / y);
       if (y < 0) angle += Math.PI;
 
-      if (x * x + y * y < this.bgSize * this.bgSize) {
-        this.barOffset.x = x;
-        this.barOffset.y = y;
-        abx = x / this.bgSize;
-        aby = y / this.bgSize;
+      if (x * x + y * y < this.size * this.size / 4) {
+        abx = x / this.size * 2;
+        aby = y / this.size * 2;
       } else {
         abx = Math.sin(angle);
         aby = Math.cos(angle);
-        this.barOffset.x = abx * this.bgSize;
-        this.barOffset.y = aby * this.bgSize;
       }
 
       if (abx < 0.1 && abx > -0.1) abx = 0;
@@ -150,7 +163,8 @@ export default {
       background: rgba(255, 255, 255, 0.8);
       box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.7);
       transition: all ease-in-out 0.4s;
-      &:active {
+      z-index: 20;
+      &.downed {
         background: gray;
         transition: none;
       }
@@ -165,6 +179,9 @@ export default {
     font-size: 0.7rem;
     text-align: center;
     margin-top: 5px;
+  }
+  @media (min-width: 660px) and (max-width: 900px) {
+    transform: scale(1.2);
   }
 }
 </style>

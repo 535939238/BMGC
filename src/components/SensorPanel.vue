@@ -1,19 +1,6 @@
 <!-- SensorPanel -->
 <template>
   <div id="SensorPanel">
-    <!-- <div class="xacc">{{raw.xacc}}</div>
-    <div class="yacc">{{raw.yacc}}</div>
-    <div class="zacc">{{raw.zacc}}</div>
-    <div class="xgyro">{{raw.xgyro}}</div>
-    <div class="ygyro">{{raw.ygyro}}</div>
-    <div class="zgyro">{{raw.zgyro}}</div>
-    <div class="xmag">{{raw.xmag}}</div>
-    <div class="ymag">{{raw.ymag}}</div>
-    <div class="zmag">{{raw.zmag}}</div> -->
-
-    <!-- <div class="roll">{{att.roll}}</div>
-    <div class="pitch">{{att.pitch}}</div>
-    <div class="yaw">{{att.yaw}}</div> -->
     <div class="accelroll">
       <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1779">
         <!-- <path :style="`transform:rotate(${north}deg)`" d="M497.1439304791101 606.4796094132988L255.5892317483415 778.6976601236245 497.15641444933203 127.35263663629752 716.7515953065143 778.6976608307314z"></path> -->
@@ -21,7 +8,7 @@
         <path class="absline" stroke="#999999" stroke-width="20" d="M512 12 L512 1000" />
         <path class="rollbg" stroke="rgba(255,255,255,0.5)" stroke-width="15" fill="none" d="M512 200 A312 312 0 1 1 200 512"></path>
         <path class="rollbg rev" stroke="rgba(255,255,255,0.5)" stroke-width="15" fill="none" d="M512 12 A494 494 0 1 1 12 512"></path>
-        <path class="pitchpath" fill="#fc5858" :style="{transform:`rotate(${att.pitch}deg)`}" d="M512 480 A44 44 0 0 0 512 544 L1000 512 Z"></path>
+        <path class="pitchpath" fill="#fc5858" :style="{transform:`rotate(${-att.pitch}deg)`}" d="M512 480 A44 44 0 0 0 512 544 L1000 512 Z"></path>
         <path class="rollpath" fill="rgba(0,193,222,0.81)" :style="{transform:`rotate(${att.roll}deg)`}" d="M512 412 L612 512 L950 512 A 350 350 0 0 1 880 672 A 750 750 0 0 0 144 672 A 350 350 0 0 1 74 512 L412 512 Z"></path>
       </svg>
       <div class="rolltext">
@@ -95,9 +82,7 @@ export default {
 
   methods: {
     HandleAttitude(dat) {
-      ["pitch", "yaw"].forEach(key => {
-        this.$set(this.att, key, (dat[key] / Math.PI * 180).toFixed(0));
-      });
+      this.att.pitch = (dat.pitch / Math.PI * 180).toFixed(0);
       let _roll = 180 - dat.roll / Math.PI * 180;
       if (_roll > 180) _roll = _roll - 360;
       this.att.roll = _roll.toFixed(0);
@@ -109,26 +94,15 @@ export default {
   mounted() {
     this.$mavlink.on("ATTITUDE", this.HandleAttitude);
     this.$mavlink.on("VFR_HUD", this.HandleHud);
-    // this.$mavlink.on("RAW_PRESSURE", ({ press_abs }) => {
-    //   console.log(press_abs);
+
+    // const namelist = {};
+    // this.$mavlink.on("message", m => {
+    //   if (!namelist[m.name]) {
+    //     console.log(m);
+    //     namelist[m.name] = m;
+    //   }
     // });
-
-    // this.$mavlink.on("SCALED_PRESSURE",e=>{
-    //   console.log(e.press_abs, e.press_diff, e.temperature)
-    // })
-
-    // this.$mavlink.on("VIBRATION", e => {
-    //   console.log(e.vibration_x, e.vibration_y, e.vibration_z);
-    // });
-
-    const namelist = {};
-    this.$mavlink.on("message", m => {
-      if (!namelist[m.name]) {
-        console.log(m);
-        namelist[m.name] = m;
-      }
-    });
-    global.namelist = namelist;
+    // global.namelist = namelist;
   },
   beforeDestroy() {
     this.$mavlink.removeListener("ATTITUDE", this.HandleAttitude);
@@ -224,18 +198,20 @@ export default {
     }
   }
   @media (max-width: 900px) {
-    $panpad: 5%;
-    $panbottom: 10%;
+    $panpad: 3%;
+    $panbottom: 5%;
     .accelroll,
     .compass {
       position: fixed;
-      bottom: $panbottom;
+      transform: scale(0.8);
     }
     .accelroll {
       left: $panpad;
+      bottom: $panbottom;
     }
     .compass {
       right: $panpad;
+      bottom: $panbottom + 15%;
     }
   }
 }

@@ -31,7 +31,10 @@ export default {
   height: 100%;
   left: 0;
   top: 0;
-  background-color: white;
+  background-image: url(/static/defaultBg.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 body {
   margin: 0;
@@ -64,6 +67,14 @@ body {
 }
 .fadeDown-leave-active {
   animation: fadeOutUp;
+  animation-duration: 0.4s;
+}
+.fadeUp-enter-active {
+  animation: fadeInUp;
+  animation-duration: 0.4s;
+}
+.fadeUp-leave-active {
+  animation: fadeOutDown;
   animation-duration: 0.4s;
 }
 </style>

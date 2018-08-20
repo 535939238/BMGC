@@ -105,9 +105,6 @@ export default {
     onTouchEnd({ touches: [touch] }) {
       this.onMouseUp(touch);
     }
-  },
-  mounted() {
-    global.vm = this;
   }
 };
 </script>

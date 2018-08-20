@@ -3,17 +3,27 @@
     <!-- <div class="outputdiv">
       <canvas ref="canvas" width="1000" height="800" :style="canvasStyle"></canvas>
     </div> -->
-    <div class="source" ref="source" :style="{'background-image':`url(${$store.getters.videoStream})`}"></div>
+    <div class="source" ref="source" :style="{'background-image':`url(${$store.state.viewbox[4] ? $store.getters.videoStream : ''})`}"></div>
     <div class="rightPanel">
-      <ControlPanel name="概览">
-        <SensorPanel />
-      </ControlPanel>
-      <ControlPanel name="机械臂/履带控制">
-        <PwmPanel />
-      </ControlPanel>
+      <transition name="fade">
+        <ControlPanel v-if="$store.state.viewbox[0]" name="概览">
+          <SensorPanel />
+        </ControlPanel>
+      </transition>
+      <transition name="fade">
+        <ControlPanel v-if="$store.state.viewbox[1]" name="机械臂/履带控制">
+          <PwmPanel />
+        </ControlPanel>
+      </transition>
+      <transition name="fade">
+        <ControlPanel v-if="$store.state.viewbox[2]">
+          <TextPanel />
+        </ControlPanel>
+      </transition>
     </div>
-
-    <MavLinkCtrl />
+    <transition name="fadeUp">
+      <MavLinkCtrl v-show="$store.state.viewbox[3]" />
+    </transition>
   </div>
 </template>
 
@@ -24,13 +34,15 @@ import { DispatchHTMLEvent } from "@/classes/util";
 import MavLinkCtrl from "./MavLinkCtrl";
 import PwmPanel from "./PwmPanel";
 import SensorPanel from "./SensorPanel";
+import TextPanel from "./TextPanel";
 export default {
   name: "",
   components: {
     ControlPanel,
     PwmPanel,
     MavLinkCtrl,
-    SensorPanel
+    SensorPanel,
+    TextPanel
   },
   data() {
     return {

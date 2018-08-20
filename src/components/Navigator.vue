@@ -42,13 +42,23 @@
             </div>
           </set-block>
           <set-block title="窗口" @active="onActive(3)" :active="focus==3">
-
+            <label class="viewbox" v-for="(item,index) in viewbox" :key="index">
+              <div class="viewtitle">{{ item }}</div>
+              <input type="checkbox" v-model="$store.state.viewbox[index]">
+            </label>
           </set-block>
-          <set-block title="高级" @active="onActive(4)" :active="focus==4">
+          <!-- <set-block title="高级" @active="onActive(4)" :active="focus==4">
 
-          </set-block>
+          </set-block> -->
           <set-block title="关于" @active="onActive(5)" :active="focus==5">
-
+            <div class="about">
+              <img src="@/assets/logo.png">
+              <h3>BM Controller</h3>
+              <h3>北冥Web控制系统</h3>
+              <h3>
+                <small>版本1.0.0</small>
+              </h3>
+            </div>
           </set-block>
         </div>
       </div>
@@ -64,18 +74,18 @@ import { DispatchHTMLEvent } from "@/classes/util";
 export default {
   data() {
     return {
-      ServoValue: [
-        { name: "左手" },
-        { name: "左关" },
-        { name: "左臂" },
-        { name: "右手" },
-        { name: "右关" },
-        { name: "右臂" }
-      ],
+      ServoValue: [{ name: "左手" }, { name: "左关" }, { name: "左臂" }],
       value: [10, 20],
       focus: 0,
       open: false,
-      barShow: true
+      barShow: true,
+      viewbox: [
+        "陀螺仪/罗盘",
+        "机械臂/履带",
+        "温深震传感器",
+        "主控板",
+        "视频流"
+      ]
     };
   },
   components: {
@@ -204,6 +214,31 @@ export default {
       &::-webkit-scrollbar {
         width: 0px;
       }
+      .viewbox {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.6rem 1.2rem;
+        color: white;
+        font-size: 0.8rem;
+        transition: background-color 0.4s ease-in-out;
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      }
+      .about {
+        text-align: center;
+        color: white;
+        h3 {
+          font-weight: lighter;
+          margin: 0.6rem 0;
+          small {
+            color: #c2c2c2;
+          }
+        }
+        .table {
+          color: gray;
+        }
+      }
     }
   }
   .logo {
@@ -214,7 +249,7 @@ export default {
     width: auto;
     padding: $barheight * 0.2;
     margin-right: 1rem;
-    transition: background-color 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
     z-index: 1000000;
     background: gray;
     border-radius: $barheight / 2;

@@ -21,10 +21,11 @@ const store = new Vuex.Store({
     stream: {
       video: "${PROTOCOL}//${SERVER}:8080/?action=stream",
       // mavlink: "ws://${SERVER}:5001",
-      mavlink: "ws://192.168.0.76:5001",
+      mavlink: "ws://${SERVER}:5001",
       command: "${PROTOCOL}//${SERVER}:${PORT}"
     },
     keyBoard: {},
+    viewbox: [true, true, true, true, true],
     WindowSize: {
       width: 0,
       height: 0
