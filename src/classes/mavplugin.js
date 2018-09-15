@@ -95,11 +95,18 @@ var install = function (Vue, {
   srcSystem = 1,
   srcComponent = 50
 }) {
+  let ws;
+  try {
+    ws = new WebSocket(url);
+  } catch (e) {
+    console.log(e);
+  }
+
   Vue.prototype.$mavlink = new MAVLinkSuper({
     logger,
     srcSystem,
     srcComponent,
-    websocket: new WebSocket(url)
+    websocket: ws
   });
 }
 

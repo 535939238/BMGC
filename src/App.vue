@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import('@/assets/animate.min.css');
 import Navigator from "@/components/Navigator";
 import store from "@/store/index";
 import KeyPress from "@/classes/KeyPress";
