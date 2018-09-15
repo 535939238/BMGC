@@ -43,12 +43,28 @@ module.exports = {
 
   build: {
     // Template for index.html
-    index: path.resolve(__dirname, '../../rovnode/static/index.html'),
+
+    // for rov
+    // index: path.resolve(__dirname, '../../rovnode/static/index.html'),
+    
+    // for demo
+    index: path.resolve(__dirname, '../dist/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../../rovnode/static'),
+
+    // for rov
+    // assetsRoot: path.resolve(__dirname, '../../rovnode/static'),
+
+    // for demo
+    assetsRoot: path.resolve(__dirname, '../dist'),
+
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+
+    // for rov
+    // assetsPublicPath: '/',
+
+    // for demo
+    assetsPublicPath: '/BMGC/',
 
     /**
      * Source Maps
