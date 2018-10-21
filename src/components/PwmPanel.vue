@@ -55,6 +55,7 @@ export default {
   },
   methods: {
     onHandleTank() {
+      if (this.tankTimerId !== undefined) this.unHandleTank();
       this.tankTimerId = setInterval(() => {
         let { x, y } = this.tankaxis;
         let allzero = x === y && x === 0;
@@ -87,6 +88,7 @@ export default {
     },
     unHandleTank() {
       clearInterval(this.tankTimerId);
+      delete this.tankTimerId;
       this.$socket.emit("tank", [0, 0]);
     },
     onHandleHand() {
@@ -105,6 +107,7 @@ export default {
         return res;
       };
 
+      if (this.handTimerId !== undefined) this.unHandleHand();
       this.handTimerId = setInterval(() => {
         let { x, y } = this.handaxis;
         y = -y;
@@ -120,11 +123,12 @@ export default {
     },
     unHandleHand() {
       clearInterval(this.handTimerId);
+      delete this.handTimerId;
     },
     resetHand() {
       const getStartStep = function(servo) {
         return (
-          ((servo.range[1] - servo.range[0]) * servo.middle / 100 +
+          (((servo.range[1] - servo.range[0]) * servo.middle) / 100 +
             servo.range[0]) /
           100
         );

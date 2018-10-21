@@ -68,3 +68,26 @@ export function JoyStickFilter(status) {
     }
   );
 }
+
+export function debounce(callback, timeout) {
+  let timerid;
+  return function (...args) {
+    if (timerid !== undefined) {
+      clearTimeout(timerid);
+      timerid = undefined;
+    }
+    timerid = setTimeout(callback, timeout, ...args);
+  }
+}
+
+export function preWatcher() {
+  this.$watch('$store.getters.mavlinkStream', debounce(n => {
+    this.$mavlink.connect(n);
+  }, 300));
+  this.$watch('$store.getters.commandStream', debounce(n => {
+    console.log(n);
+    this.$socket.connect(n, {
+      transports: ['websocket']
+    });
+  }, 300));
+}

@@ -3,17 +3,17 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import VueSocketio from 'vue-socket.io'
+
+import socketIo from "./classes/socketIoplugin"
 import mavlink from "./classes/mavplugin"
 import gamepad from "./classes/gamePadplugin"
-import store from "./store"
+import store from "./store/index"
+import axios from "axios"
 
-Vue.use(VueSocketio, store.getters.commandStream);
-Vue.use(mavlink, {
-  // logger: console,
-  url: store.getters.mavlinkStream
-});
+Vue.use(socketIo);
+Vue.use(mavlink);
 Vue.use(gamepad);
+Vue.prototype.$axios = axios;
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
@@ -23,5 +23,6 @@ new Vue({
   components: {
     App
   },
+  store,
   template: '<App/>'
 })

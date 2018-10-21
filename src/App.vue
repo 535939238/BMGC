@@ -1,21 +1,21 @@
 <template>
   <div id="app">
     <router-view style="margin-top: 50px;" />
-    <Navigator/>
+    <Navigator />
   </div>
 </template>
 
 <script>
-import('@/assets/animate.min.css');
+import("@/assets/animate.min.css");
 import Navigator from "@/components/Navigator";
-import store from "@/store/index";
 import KeyPress from "@/classes/KeyPress";
+import { preWatcher } from "@/classes/util";
 export default {
   name: "App",
   components: {
     Navigator
   },
-  store
+  mounted: preWatcher
 };
 </script>
 

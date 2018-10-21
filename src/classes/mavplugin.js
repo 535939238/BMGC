@@ -4,7 +4,7 @@ class MAVLinkSuper extends mavlink.MAVLink {
 
   /**
    * Creates an instance of MAVLink.
-   * @param { {logger?:Console, srcSystem?:number, srcComponent?:number, websocket:WebSocket} } options   
+   * @param { {logger?:Console, srcSystem?:number, srcComponent?:number} } options   
    * @memberof MAVLinkSuper
    * @constructor
    */
@@ -12,13 +12,33 @@ class MAVLinkSuper extends mavlink.MAVLink {
     logger = null,
     srcSystem = 1,
     srcComponent = 50,
-    websocket
   }) {
     super(logger, srcSystem, srcComponent);
-    if (websocket === undefined)
-      console.error("websocket is undefined!");
+  }
 
+
+  /**
+   * connect websocket to url
+   *
+   * @param {*} url
+   * @memberof MAVLinkSuper
+   */
+  connect(url) {
+    if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
+      this.ws.close(0, "old WebSocket closed ")
+    }
+
+    try {
+      this.ws = new WebSocket(url);
+    } catch (e) {
+      console.warn(e);
+      return;
+    }
+
+    let websocket = this.ws;
     websocket.binaryType = "arraybuffer";
+
+    let _heartBeatId;
     websocket.onopen = () => {
       setTimeout(() => {
         this.go(new mavlink.messages.request_data_stream(
@@ -30,7 +50,7 @@ class MAVLinkSuper extends mavlink.MAVLink {
         ));
       }, 200);
 
-      this._heartBeatId = setInterval(() => {
+      _heartBeatId = setInterval(() => {
         // this.go(new mavlink.messages.heartbeat(
         //   mavlink.MAV_TYPE_GCS,
         //   mavlink.MAV_AUTOPILOT_INVALID,
@@ -53,14 +73,13 @@ class MAVLinkSuper extends mavlink.MAVLink {
     };
 
     websocket.onclose = () => {
-      clearInterval(this._heartBeatId);
+      clearInterval(_heartBeatId);
     }
 
     websocket.onmessage = (mes) => {
       this.parseBuffer(Buffer.from(mes.data));
     }
 
-    this.ws = websocket;
     this.file = this.ws;
     this.ws.write = this.ws.send;
   }
@@ -89,24 +108,20 @@ MAVLinkSuper.prototype.target_system = 1;
 MAVLinkSuper.prototype.target_component = 1;
 
 // plugin for extract mavlink control
-var install = function (Vue, {
-  url,
+function install(Vue, {
   logger = null,
   srcSystem = 1,
   srcComponent = 50
+} = {
+  logger: null,
+  srcSystem: 1,
+  srcComponent: 50
 }) {
-  let ws;
-  try {
-    ws = new WebSocket(url);
-  } catch (e) {
-    console.log(e);
-  }
 
   Vue.prototype.$mavlink = new MAVLinkSuper({
     logger,
     srcSystem,
-    srcComponent,
-    websocket: ws
+    srcComponent
   });
 }
 
