@@ -3,7 +3,7 @@
   <div class="CircleSlider">
     <svg ref="svg" viewBox="0 0 120 120">
       <path stroke="#00be7e" fill="none" stroke-width="2" :d="cpathd"></path>
-      <circle fill="#00be7e" r="7" :cx="bpoint.x" :cy="bpoint.y" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseout="onMouseOut" @touchmove="onTouchMove" @touchstart="onTouchStart" @touchend="onTouchEnd"></circle>
+      <circle fill="#00be7e" r="7" :cx="bpoint.x" :cy="bpoint.y" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseout="onMouseOut" @touchmove="onTouchMove" @touchstart="onTouchStart" @touchend="onTouchEnd" @click="onClick"></circle>
     </svg>
     <transition name="fade">
       <div class="tag" v-if="tagshow" :style="tagStyle">
@@ -65,6 +65,21 @@ export default {
       window.removeEventListener("mousemove", this.onBaseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
     },
+    onMouseMove(e) {
+      if (e.buttons == 0) {
+        this.tagshow = true;
+        this.tagStyle = {
+          left: e.offsetX + "px",
+          top: e.offsetY - 30 + "px"
+        };
+      }
+    },
+    onMouseOut(e) {
+      this.tagshow = false;
+    },
+    onClick() {
+      this.tagshow = true;
+    },
     onBaseMove({ clientX, clientY }) {
       let abx = clientX - this.centerP.x;
       let aby = -(clientY - this.centerP.y);
@@ -75,18 +90,6 @@ export default {
       let zangle = 0.75 + Math.atan(aby / abx) / Math.PI / 2;
       if (abx > 0) zangle -= 0.5;
       this.$emit("input", zangle);
-    },
-    onMouseMove(e) {
-      if (e.buttons == 0) {
-        this.tagshow = true;
-        this.tagStyle = {
-          left: e.clientX + "px",
-          top: e.clientY - 25 + "px"
-        };
-      }
-    },
-    onMouseOut(e) {
-      this.tagshow = false;
     },
     onTouchMove({ touches: [touch] }) {
       this.onBaseMove(touch);
@@ -104,6 +107,7 @@ export default {
     },
     onTouchEnd({ touches: [touch] }) {
       this.onMouseUp(touch);
+      this.tagshow = false;
     }
   }
 };
@@ -119,7 +123,7 @@ export default {
     width: 120%;
   }
   > .tag {
-    position: fixed;
+    position: absolute;
     color: white;
     font-size: 0.7rem;
     padding: 3px 7px;

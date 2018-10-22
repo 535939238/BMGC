@@ -15,20 +15,23 @@
 import JoyStickSingle from "./JoyStickSingle";
 import { createWatchList, JoyStickFilter } from "@/classes/util";
 
-const watch = createWatchList({
-  hand: {
-    up: ["handaxis", "HandleHand", { x: 0, y: 1 }, JoyStickFilter],
-    down: ["handaxis", "HandleHand", { x: 0, y: -1 }, JoyStickFilter],
-    left: ["handaxis", "HandleHand", { x: 1, y: 0 }, JoyStickFilter],
-    right: ["handaxis", "HandleHand", { x: -1, y: 0 }, JoyStickFilter]
+const watch = createWatchList(
+  {
+    hand: {
+      up: ["handaxis", "HandleHand", { y: 1 }, JoyStickFilter],
+      down: ["handaxis", "HandleHand", { y: -1 }, JoyStickFilter],
+      left: ["handaxis", "HandleHand", { x: 1 }, JoyStickFilter],
+      right: ["handaxis", "HandleHand", { x: -1 }, JoyStickFilter]
+    },
+    tank: {
+      up: ["tankaxis", "HandleTank", { y: 1 }, JoyStickFilter],
+      down: ["tankaxis", "HandleTank", { y: -1 }, JoyStickFilter],
+      left: ["tankaxis", "HandleTank", { x: 1 }, JoyStickFilter],
+      right: ["tankaxis", "HandleTank", { x: -1 }, JoyStickFilter]
+    }
   },
-  tank: {
-    up: ["tankaxis", "HandleTank", { x: 0, y: 1 }, JoyStickFilter],
-    down: ["tankaxis", "HandleTank", { x: 0, y: -1 }, JoyStickFilter],
-    left: ["tankaxis", "HandleTank", { x: 1, y: 0 }, JoyStickFilter],
-    right: ["tankaxis", "HandleTank", { x: -1, y: 0 }, JoyStickFilter]
-  }
-});
+  { x: 0, y: 0 }
+);
 // console.log(watch);
 export default {
   name: "",

@@ -25,18 +25,21 @@
 import JoyStickSingle from "./JoyStickSingle";
 import { createWatchList, JoyStickFilter } from "@/classes/util";
 
-const watch = createWatchList({
-  rov: {
-    up: ["raxis", "", { x: 0, y: 1 }, JoyStickFilter],
-    down: ["raxis", "", { x: 0, y: -1 }, JoyStickFilter],
-    tleft: ["raxis", "", { x: 1, y: 0 }, JoyStickFilter],
-    tright: ["raxis", "", { x: -1, y: 0, JoyStickFilter }],
-    front: ["laxis", "", { x: 0, y: 1 }, JoyStickFilter],
-    back: ["laxis", "", { x: 0, y: -1 }, JoyStickFilter],
-    left: ["laxis", "", { x: 1, y: 0 }, JoyStickFilter],
-    right: ["laxis", "", { x: -1, y: 0 }, JoyStickFilter]
-  }
-});
+const watch = createWatchList(
+  {
+    rov: {
+      up: ["raxis", "", { y: 1 }, JoyStickFilter],
+      down: ["raxis", "", { y: -1 }, JoyStickFilter],
+      tleft: ["raxis", "", { x: 1 }, JoyStickFilter],
+      tright: ["raxis", "", { x: -1 }, JoyStickFilter],
+      front: ["laxis", "", { y: 1 }, JoyStickFilter],
+      back: ["laxis", "", { y: -1 }, JoyStickFilter],
+      left: ["laxis", "", { x: 1 }, JoyStickFilter],
+      right: ["laxis", "", { x: -1 }, JoyStickFilter]
+    }
+  },
+  { x: 0, y: 0 }
+);
 
 export default {
   name: "",
@@ -110,7 +113,10 @@ export default {
   },
   methods: {
     onHandleAxis() {
-      let { ljoy: { axis: laxis }, rjoy: { axis: raxis } } = this.$refs;
+      let {
+        ljoy: { axis: laxis },
+        rjoy: { axis: raxis }
+      } = this.$refs;
       this.handTimerId = setInterval(() => {
         let command = {
           type: "manual_control",

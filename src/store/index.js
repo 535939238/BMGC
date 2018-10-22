@@ -3,6 +3,14 @@ import Vuex from "vuex"
 
 Vue.use(Vuex);
 
+const connectStateEnum = {
+  default: "未连接",
+  ing: "连接中",
+  success: "正在通讯",
+  failed: "连接出错！",
+  timeout: "连接超时！"
+};
+
 const store = new Vuex.Store({
   state: {
     servo: [{
@@ -28,6 +36,10 @@ const store = new Vuex.Store({
     _windowSize: {
       width: 0,
       height: 0
+    },
+    _connectState: {
+      mavlink: connectStateEnum.default,
+      command: connectStateEnum.default
     }
   },
   mutations: {
@@ -45,17 +57,20 @@ const store = new Vuex.Store({
     windowSize(state, width, height) {
       state._windowSize.width = width;
       state._windowSize.height = height;
+    },
+    connectState(state, [type, value]) {
+      state._connectState[type] = value;
     }
   },
   getters: {
     videoStream(state) {
-      return GenerateLocation(state.stream.video, "${PROTOCOL}//${SERVER}:8080?action=stream");
+      return GenerateLocation(state.stream.video);
     },
     mavlinkStream(state) {
-      return GenerateLocation(state.stream.mavlink, "ws://${SERVER}:5001");
+      return GenerateLocation(state.stream.mavlink);
     },
     commandStream(state) {
-      return GenerateLocation(state.stream.command, "${PROTOCOL}//${SERVER}:${PORT}");
+      return GenerateLocation(state.stream.command);
     }
   },
   actions: {
@@ -138,6 +153,13 @@ const store = new Vuex.Store({
   }
 });
 
+// debug for state
+// global.store = store;
+
+// export connectState
+store._connectStateEnum = connectStateEnum;
+
+// get state for localStorage or post to server
 function GetStorableState() {
   let config = {};
   Object.keys(store.state).filter(k => k[0] !== "_").forEach(key => {
@@ -146,8 +168,8 @@ function GetStorableState() {
   return config;
 }
 
-function GenerateLocation(url, defau) {
-  if (!url) return GenerateLocation(defau);
+// convert settings
+function GenerateLocation(url) {
   let result = url;
   let ReplaceKeys = {
     "${PROTOCOL}": window.location.protocol,
@@ -160,10 +182,14 @@ function GenerateLocation(url, defau) {
   return result;
 }
 
-const app = document.getElementById("app");
-window.addEventListener("resize", () => {
-  store.commit("windowSize", app.clientWidth, app.clientHeight);
-});
+
+// add auto resize ( this is unused until now )
+// const app = document.getElementById("app");
+// window.addEventListener("resize", () => {
+//   store.commit("windowSize", app.clientWidth, app.clientHeight);
+// });
+
+// auto save to localStorage
 window.addEventListener("beforeunload", () => {
   localStorage.BMGCStore = JSON.stringify(GetStorableState());
 });

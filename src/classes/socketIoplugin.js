@@ -10,6 +10,7 @@ function install(Vue) {
     let socket = io(...args)
     socket.connect = connect;
     socket._callbacks = _socket._callbacks;
+    socket.emit('reconnecting');
     _socket.removeAllListeners();
     Vue.prototype.$socket = socket;
   }

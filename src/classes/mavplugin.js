@@ -25,7 +25,7 @@ class MAVLinkSuper extends mavlink.MAVLink {
    */
   connect(url) {
     if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
-      this.ws.close(0, "old WebSocket closed ")
+      this.ws.close(3000, "old WebSocket closed ");
     }
 
     try {
@@ -37,9 +37,10 @@ class MAVLinkSuper extends mavlink.MAVLink {
 
     let websocket = this.ws;
     websocket.binaryType = "arraybuffer";
+    this.emit('reconnect', this.ws);
 
     let _heartBeatId;
-    websocket.onopen = () => {
+    websocket.addEventListener('open', () => {
       setTimeout(() => {
         this.go(new mavlink.messages.request_data_stream(
           1,
@@ -48,7 +49,7 @@ class MAVLinkSuper extends mavlink.MAVLink {
           5,
           1
         ));
-      }, 200);
+      }, 1000);
 
       _heartBeatId = setInterval(() => {
         // this.go(new mavlink.messages.heartbeat(
@@ -70,11 +71,11 @@ class MAVLinkSuper extends mavlink.MAVLink {
         };
         this.go(command);
       }, 1000);
-    };
+    });
 
-    websocket.onclose = () => {
+    websocket.addEventListener('close', () => {
       clearInterval(_heartBeatId);
-    }
+    });
 
     websocket.onmessage = (mes) => {
       this.parseBuffer(Buffer.from(mes.data));

@@ -162,7 +162,7 @@ export default {
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.8);
       box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.7);
-      transition: all ease-in-out 0.4s;
+      transition: all ease-in-out 0.2s;
       z-index: 20;
       &.downed {
         background: gray;
