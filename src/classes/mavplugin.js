@@ -12,8 +12,10 @@ class MAVLinkSuper extends mavlink.MAVLink {
     logger = null,
     srcSystem = 1,
     srcComponent = 50,
+    retryDelay = 5000
   }) {
     super(logger, srcSystem, srcComponent);
+    this.retryDelay = retryDelay;
   }
 
 
@@ -40,6 +42,7 @@ class MAVLinkSuper extends mavlink.MAVLink {
     this.emit('reconnect', this.ws);
 
     let _heartBeatId;
+
     websocket.addEventListener('open', () => {
       setTimeout(() => {
         this.go(new mavlink.messages.request_data_stream(
@@ -73,9 +76,19 @@ class MAVLinkSuper extends mavlink.MAVLink {
       }, 1000);
     });
 
-    websocket.addEventListener('close', () => {
+    websocket.addEventListener('close', (e) => {
       clearInterval(_heartBeatId);
+      if (e.code !== 3000) {
+        console.log(`websocket unnormally closed. retry in ${this.retryDelay}ms...`);
+        setTimeout(ws => {
+          if (this.ws === ws) {
+            this.connect(url);
+          }
+        }, this.retryDelay, this.ws);
+      }
     });
+
+
 
     websocket.onmessage = (mes) => {
       this.parseBuffer(Buffer.from(mes.data));

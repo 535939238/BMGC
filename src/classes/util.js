@@ -106,21 +106,32 @@ export function preWatcher() {
     this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.ing]);
     ws.addEventListener('open', () => {
       this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.success]);
+      console.log("open");
     });
     ws.addEventListener('error', () => {
       this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.failed]);
+      console.log("error");
       setTimeout(() => {
         if (this.$store.state._connectState.mavlink === this.$store._connectStateEnum.failed)
           this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.default]);
       }, 3000);
     });
+    ws.addEventListener('close', () => {
+      if (this.$store.state._connectState.mavlink !== this.$store._connectStateEnum.failed)
+        this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.default]);
+      console.log('close');
+    });
   });
 
 
   this.$watch('$store.getters.commandStream', debounce(n => {
-    this.$socket.connect(n, {
-      transports: ['websocket']
-    });
+    if (/^wss?:\/\//.test(n)) {
+      this.$socket.connect(n, {
+        transports: ['websocket']
+      });
+    } else {
+      this.$socket.connect(n);
+    }
   }, 300));
 
   this.$socket.on('connect', () => {
