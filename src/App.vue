@@ -2,6 +2,7 @@
   <div id="app">
     <router-view style="margin-top: 50px;" />
     <Navigator />
+    <img ref="bgimg" src="@/assets/defaultBg.jpg" style="display:none">
   </div>
 </template>
 
@@ -15,7 +16,10 @@ export default {
   components: {
     Navigator
   },
-  mounted: preWatcher
+  mounted: function() {
+    preWatcher.call(this);
+    this.$el.style.backgroundImage = `url(${this.$refs.bgimg.src})`;
+  }
 };
 </script>
 
@@ -31,8 +35,7 @@ export default {
   width: 100%;
   height: 100%;
   left: 0;
-  top: 0;
-  background-image: url(/static/defaultBg.jpg);
+  top: 0;  
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

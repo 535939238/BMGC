@@ -44,27 +44,16 @@ module.exports = {
   build: {
     // Template for index.html
 
-    // for rov
-    // index: path.resolve(__dirname, '../../rovnode/static/index.html'),
-    
-    // for demo
-    index: path.resolve(__dirname, '../dist/index.html'),
+    index: path.resolve(__dirname, '../../rovnode/static/index.html'),
 
     // Paths
 
-    // for rov
-    // assetsRoot: path.resolve(__dirname, '../../rovnode/static'),
-
-    // for demo
-    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsRoot: path.resolve(__dirname, '../../rovnode/static'),
 
     assetsSubDirectory: 'static',
 
-    // for rov
-    // assetsPublicPath: '/',
+    assetsPublicPath: '/',
 
-    // for demo
-    assetsPublicPath: '/BMGC/',
 
     /**
      * Source Maps
@@ -87,4 +76,13 @@ module.exports = {
     // Set to `true` or `false` to always turn it on or off
     bundleAnalyzerReport: process.env.npm_config_report
   }
+}
+
+
+// for demo
+module.exports.build = {
+  ...module.exports.build,
+  index: path.resolve(__dirname, '../dist/index.html'),
+  assetsRoot: path.resolve(__dirname, '../dist'),
+  assetsPublicPath: '/BMGC/'
 }
