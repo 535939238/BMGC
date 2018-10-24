@@ -34,16 +34,11 @@
               <span>视频流</span>
               <input v-model="$store.state.stream.video" class="msinput" placeholder="/5002" />
               <span style="opacity:0" class="state-span">&nbsp;</span>
-            </div>
-            <div class="single-input">
-              <span>mavlink</span>
-              <input v-model="$store.state.stream.mavlink" class="msinput" placeholder="/5001">
-              <span class="state-span">{{ $store.state._connectState.mavlink }}</span>
-            </div>
+            </div>            
             <div class="single-input">
               <span>指令流</span>
               <input v-model="$store.state.stream.command" class="msinput" placeholder="/">
-              <span class="state-span">{{ $store.state._connectState.command }}</span>
+              <span class="state-span">{{ $store.state._connectState }}</span>
             </div>
           </set-block>
           <set-block title="窗口" @active="onActive(3)" :active="focus==3">

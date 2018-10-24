@@ -70,8 +70,9 @@ export default {
     },
     armed(val) {
       if (this.myarm !== -1) {
-        this.$mavlink.go(
-          new this.$mavlink.messages.command_long(
+        this.$socket.emit("mavlink", {
+          type: "command_long",
+          args: [
             this.$mavlink.target_system,
             this.$mavlink.target_component,
             this.$mavlink.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
@@ -83,8 +84,8 @@ export default {
             0,
             0,
             0
-          )
-        );
+          ]
+        });
         this.myarm = 1;
       }
 
@@ -92,22 +93,6 @@ export default {
         this.onHandleAxis();
       } else this.unHandleAxis();
       if (this.myarm === -1) delete this.myarm;
-      // setTimeout(() => {
-      //   this.$mavlink.go(
-      //     new this.$mavlink.messages.set_mode(
-      //       this.$mavlink.target_system,
-      //       this.$mavlink.mavlink.MAV_MODE_FLAG_MANUAL_INPUT_ENABLED,
-      //       0
-      //     )
-      //   );
-      // }, 200);
-
-      // master.mav.command_long_send(
-      //   master.target_system,
-      //   master.target_component,
-      //   mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-      //   0,
-      //   1, 0, 0, 0, 0, 0, 0)
     },
     ...watch
   },
@@ -118,7 +103,7 @@ export default {
         rjoy: { axis: raxis }
       } = this.$refs;
       this.handTimerId = setInterval(() => {
-        let command = {
+        this.$socket.emit("mavlink", {
           type: "manual_control",
           args: [
             this.$mavlink.target_system,
@@ -128,9 +113,7 @@ export default {
             Math.round(raxis.x * 1000),
             this.btngroup
           ]
-        };
-        console.log(command.args);
-        this.$mavlink.go(command);
+        });
       }, 50);
     },
     unHandleAxis() {

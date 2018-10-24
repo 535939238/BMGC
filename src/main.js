@@ -5,13 +5,11 @@ import App from './App'
 import router from './router'
 
 import socketIo from "./classes/socketIoplugin"
-import mavlink from "./classes/mavplugin"
 import gamepad from "./classes/gamePadplugin"
 import store from "./store/index"
 import axios from "axios"
 
 Vue.use(socketIo);
-Vue.use(mavlink);
 Vue.use(gamepad);
 Vue.prototype.$axios = axios;
 Vue.config.productionTip = false

@@ -37,10 +37,7 @@ const store = new Vuex.Store({
       width: 0,
       height: 0
     },
-    _connectState: {
-      mavlink: connectStateEnum.default,
-      command: connectStateEnum.default
-    }
+    _connectState: connectStateEnum.default
   },
   mutations: {
     armstep(state, val) {
@@ -58,16 +55,13 @@ const store = new Vuex.Store({
       state._windowSize.width = width;
       state._windowSize.height = height;
     },
-    connectState(state, [type, value]) {
-      state._connectState[type] = value;
+    connectState(state, value) {
+      state._connectState = value;
     }
   },
   getters: {
     videoStream(state) {
       return GenerateLocation(state.stream.video);
-    },
-    mavlinkStream(state) {
-      return GenerateLocation(state.stream.mavlink);
     },
     commandStream(state) {
       return GenerateLocation(state.stream.command);
@@ -117,8 +111,7 @@ const store = new Vuex.Store({
           "armstep": 0.03
         },
         "stream": {
-          "video": "${PROTOCOL}//${SERVER}:8080/?action=stream",
-          "mavlink": "ws://${SERVER}:5001",
+          "video": "${PROTOCOL}//${SERVER}:8080/?action=stream",          
           "command": "${PROTOCOL}//${SERVER}:${PORT}"
         },
         "keyBoard": {

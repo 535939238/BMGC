@@ -95,34 +95,6 @@ export function debounce(callback, timeout) {
 }
 
 export function preWatcher() {
-  this.$watch('$store.getters.mavlinkStream',
-    debounce(n => {
-      console.log(n);
-      this.$mavlink.connect(n);
-    }, 300)
-  );
-
-  this.$mavlink.on('reconnect', ws => {
-    this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.ing]);
-    ws.addEventListener('open', () => {
-      this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.success]);
-      console.log("open");
-    });
-    ws.addEventListener('error', () => {
-      this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.failed]);
-      console.log("error");
-      setTimeout(() => {
-        if (this.$store.state._connectState.mavlink === this.$store._connectStateEnum.failed)
-          this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.default]);
-      }, 3000);
-    });
-    ws.addEventListener('close', () => {
-      if (this.$store.state._connectState.mavlink !== this.$store._connectStateEnum.failed)
-        this.$store.commit('connectState', ['mavlink', this.$store._connectStateEnum.default]);
-      console.log('close');
-    });
-  });
-
 
   this.$watch('$store.getters.commandStream', debounce(n => {
     if (/^wss?:\/\//.test(n)) {
@@ -135,19 +107,19 @@ export function preWatcher() {
   }, 300));
 
   this.$socket.on('connect', () => {
-    this.$store.commit('connectState', ['command', this.$store._connectStateEnum.success]);
+    this.$store.commit('connectState', this.$store._connectStateEnum.success);
   });
 
   this.$socket.on('connect_error', () => {
-    this.$store.commit('connectState', ['command', this.$store._connectStateEnum.failed]);
+    this.$store.commit('connectState', this.$store._connectStateEnum.failed);
   });
 
   this.$socket.on('connect_timeout', () => {
-    this.$store.commit('connectState', ['command', this.$store._connectStateEnum.timeout]);
+    this.$store.commit('connectState', this.$store._connectStateEnum.timeout);
   });
 
   this.$socket.on('reconnecting', () => {
-    this.$store.commit('connectState', ['command', this.$store._connectStateEnum.ing]);
+    this.$store.commit('connectState', this.$store._connectStateEnum.ing);
   });
 
 }
