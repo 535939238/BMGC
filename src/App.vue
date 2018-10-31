@@ -1,20 +1,25 @@
 <template>
   <div id="app">
     <router-view style="margin-top: 50px;" />
-    <Navigator/>
+    <Navigator />
+    <img ref="bgimg" src="@/assets/defaultBg.jpg" style="display:none">
   </div>
 </template>
 
 <script>
+import("@/assets/animate.min.css");
 import Navigator from "@/components/Navigator";
-import store from "@/store/index";
 import KeyPress from "@/classes/KeyPress";
+import { preWatcher } from "@/classes/util";
 export default {
   name: "App",
   components: {
     Navigator
   },
-  store
+  mounted: function() {
+    preWatcher.call(this);
+    this.$el.style.backgroundImage = `url(${this.$refs.bgimg.src})`;
+  }
 };
 </script>
 
@@ -30,8 +35,7 @@ export default {
   width: 100%;
   height: 100%;
   left: 0;
-  top: 0;
-  background-image: url(/static/defaultBg.jpg);
+  top: 0;  
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

@@ -15,20 +15,23 @@
 import JoyStickSingle from "./JoyStickSingle";
 import { createWatchList, JoyStickFilter } from "@/classes/util";
 
-const watch = createWatchList({
-  hand: {
-    up: ["handaxis", "HandleHand", { x: 0, y: 1 }, JoyStickFilter],
-    down: ["handaxis", "HandleHand", { x: 0, y: -1 }, JoyStickFilter],
-    left: ["handaxis", "HandleHand", { x: 1, y: 0 }, JoyStickFilter],
-    right: ["handaxis", "HandleHand", { x: -1, y: 0 }, JoyStickFilter]
+const watch = createWatchList(
+  {
+    hand: {
+      up: ["handaxis", "HandleHand", { y: 1 }, JoyStickFilter],
+      down: ["handaxis", "HandleHand", { y: -1 }, JoyStickFilter],
+      left: ["handaxis", "HandleHand", { x: 1 }, JoyStickFilter],
+      right: ["handaxis", "HandleHand", { x: -1 }, JoyStickFilter]
+    },
+    tank: {
+      up: ["tankaxis", "HandleTank", { y: 1 }, JoyStickFilter],
+      down: ["tankaxis", "HandleTank", { y: -1 }, JoyStickFilter],
+      left: ["tankaxis", "HandleTank", { x: 1 }, JoyStickFilter],
+      right: ["tankaxis", "HandleTank", { x: -1 }, JoyStickFilter]
+    }
   },
-  tank: {
-    up: ["tankaxis", "HandleTank", { x: 0, y: 1 }, JoyStickFilter],
-    down: ["tankaxis", "HandleTank", { x: 0, y: -1 }, JoyStickFilter],
-    left: ["tankaxis", "HandleTank", { x: 1, y: 0 }, JoyStickFilter],
-    right: ["tankaxis", "HandleTank", { x: -1, y: 0 }, JoyStickFilter]
-  }
-});
+  { x: 0, y: 0 }
+);
 // console.log(watch);
 export default {
   name: "",
@@ -55,6 +58,7 @@ export default {
   },
   methods: {
     onHandleTank() {
+      if (this.tankTimerId !== undefined) this.unHandleTank();
       this.tankTimerId = setInterval(() => {
         let { x, y } = this.tankaxis;
         let allzero = x === y && x === 0;
@@ -87,6 +91,7 @@ export default {
     },
     unHandleTank() {
       clearInterval(this.tankTimerId);
+      delete this.tankTimerId;
       this.$socket.emit("tank", [0, 0]);
     },
     onHandleHand() {
@@ -105,6 +110,7 @@ export default {
         return res;
       };
 
+      if (this.handTimerId !== undefined) this.unHandleHand();
       this.handTimerId = setInterval(() => {
         let { x, y } = this.handaxis;
         y = -y;
@@ -120,11 +126,12 @@ export default {
     },
     unHandleHand() {
       clearInterval(this.handTimerId);
+      delete this.handTimerId;
     },
     resetHand() {
       const getStartStep = function(servo) {
         return (
-          ((servo.range[1] - servo.range[0]) * servo.middle / 100 +
+          (((servo.range[1] - servo.range[0]) * servo.middle) / 100 +
             servo.range[0]) /
           100
         );

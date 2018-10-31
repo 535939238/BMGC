@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/': {
-        target: 'http://192.168.0.76:5000',
+        target: 'http://localhost:5000',
         changeOrigin: true
       }
     },
@@ -43,12 +43,17 @@ module.exports = {
 
   build: {
     // Template for index.html
+
     index: path.resolve(__dirname, '../../rovnode/static/index.html'),
 
     // Paths
+
     assetsRoot: path.resolve(__dirname, '../../rovnode/static'),
+
     assetsSubDirectory: 'static',
+
     assetsPublicPath: '/',
+
 
     /**
      * Source Maps
@@ -71,4 +76,13 @@ module.exports = {
     // Set to `true` or `false` to always turn it on or off
     bundleAnalyzerReport: process.env.npm_config_report
   }
+}
+
+
+// for demo
+module.exports.build = {
+  ...module.exports.build,
+  index: path.resolve(__dirname, '../dist/index.html'),
+  assetsRoot: path.resolve(__dirname, '../dist'),
+  assetsPublicPath: '/BMGC/'
 }
