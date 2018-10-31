@@ -44,11 +44,11 @@ module.exports = {
   build: {
     // Template for index.html
 
-    index: path.resolve(__dirname, '../../rovnode/static/index.html'),
+    index: path.resolve(__dirname, '../dist/index.html'),
 
     // Paths
 
-    assetsRoot: path.resolve(__dirname, '../../rovnode/static'),
+    assetsRoot: path.resolve(__dirname, '../dist'),
 
     assetsSubDirectory: 'static',
 
@@ -80,9 +80,9 @@ module.exports = {
 
 
 // for demo
-module.exports.build = {
+/*module.exports.build = {
   ...module.exports.build,
   index: path.resolve(__dirname, '../dist/index.html'),
   assetsRoot: path.resolve(__dirname, '../dist'),
   assetsPublicPath: '/BMGC/'
-}
+}*/
